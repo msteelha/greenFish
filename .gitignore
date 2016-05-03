@@ -39,6 +39,10 @@ Thumbs.db
 env/
 CONFIG.py
 CONFIG.py~
-README.MD~
+CONFIG.pyc
+CONFIG.base.py~
+README.md~
 requirements.txt~
 Makefile~
+.gitignore
+
