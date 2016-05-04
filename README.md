@@ -18,8 +18,8 @@ python -m pip install pymongo
 
 will fix Makefile later
 
-#Operations Doc
+#Proposal 
 
-See Concepts of Operation Doc for more information
+Project Proposal avaiable here: https://docs.google.com/document/d/1xUiHJ3p5OtUf_5L7pVXDkMUZIh6uWWWdzzQtH2H34qM/edit?usp=sharing
 
 
