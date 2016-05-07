@@ -16,15 +16,10 @@ import arrow # Replacement for datetime, based on moment.js
 #import datetime # But we still need time
 #from dateutil import tz  # For interpreting local times
 
-# Our own module
-#import pre  # Preprocess schedule file
-
-
 ###
 # Globals
 ###
 app = flask.Flask(__name__)
-#schedule = "static/schedule.txt"  # This should be configurable
 import CONFIG
 
 
@@ -62,7 +57,14 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-    return flask.render_template('client.html')
+
+### ADDED OPTION FOR TWO PAGES FOR FORMS ###
+### ONE PRE PRIORITY, ONE POST ###
+
+    if flask.session.get('priorityList') == None:
+        return flask.render_template('client.html')
+    else:
+        return flask.render_template('client.html')
 
 ### Admin Page ###
 
@@ -202,15 +204,23 @@ def formSettings():
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
         collectionFormsDB.insert(record)
-        aForm = collectionClassDB.find_one({"date": aTime})
+        aForm = collectionFormsDB.find_one({"date": aTime})
         locId = str(aForm.get('_id'))
-        locList = collectionClassDB.get("formList")
+        aClass = collectionClassDB.find_one({"_id":parentId})
+        locList = aClass.get("formList")
         locList.append(locId)
         collectionClassDB.update_one(
             {"_id": ObjectId(parentId)},
             {"$set": {"formList":locList}}
         )
+        flask.session['priorityList'] = None
         d = "added"
+    elif setting == "getPriorities":
+        parentId = request.args.get('parentId',0,type=str)
+        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
+        aList = aClass.get("priorityList")
+        flask.session['priorityList'] = aList
+        d = "priorities gathered"
     else:
         d = "wat"
     return jsonify(result = d)
