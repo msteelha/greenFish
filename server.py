@@ -28,7 +28,8 @@ app.secret_key = str(uuid.uuid4())
 app.debug = CONFIG.DEBUG
 app.logger.setLevel(logging.DEBUG)
 
-
+with open('static/questions.txt','r') as inf:
+    questions = eval(inf.read())
 try:
     dbclient = MongoClient(CONFIG.MONGO_URL)
     db = dbclient.service
@@ -57,7 +58,8 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-
+    if flask.sesion.get("questions") == None:
+        flask.session['questions'] = questions
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
 
