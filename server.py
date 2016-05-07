@@ -37,9 +37,9 @@ app.logger.setLevel(logging.DEBUG)
 try:
     dbclient = MongoClient(CONFIG.MONGO_URL)
     db = dbclient.service
-    collectionTeamBuildList = db.tbl
+    collectionClassDB = db.classDB
     collectionAccounts = db.adminAccounts
-    collectionTeamBuilds = db.teamBuilds
+    collectionFormsDB = db.forms
 except:
     print("Failure opening database.  Is Mongo running? Correct password?")
     #sys.exit(1)
@@ -128,10 +128,13 @@ def adminSettings():
     adminName = request.args.get('adminName',0,type=str)
     adminKey = request.args.get('adminKey',0,type=str)
     if setting  == "addAdmin":
-        tbl = [] #a list of team builder object ids for the administrator
-        record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "teamBuildList": tbl}
-        collectionAccounts.insert(record)
-        d = {'result':'added'}
+        classList = [] #a list of team builder object ids for the administrator
+        if collectionAccounts.find_one({'name':adminName}) == None:
+            record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "classList": classList}
+            collectionAccounts.insert(record)
+            d = "added"
+        else:
+            d = "account exists"
     elif setting == "removeAdmin":
         collectionAccounts.remove({'_id':flask.session.get('login')})
         flask.session['name'] = None
@@ -142,9 +145,79 @@ def adminSettings():
         flask.session['login'] = None
         return flask.redirect(url_for('login'))
     else:
-        d = {'result':'wat'}
-    d = json.dumps(d)
+        d = "wat"
     return jsonify(result = d)
+
+
+###############################################################################
+####################------READY FOR TESTING------##############################
+
+@app.route("/_classDBSettings")
+def classDBSettings():
+    setting = request.args.get('setting',0,type=str)
+    if setting == "addClass":
+        className = request.args.get('className',0,type=str)
+        qPriority = [0,0,0,0,0,0,0,0,0,0]
+        aTime = arrow.utcnow().naive
+        formList = []
+        record = {"name": className, "date":aTime , "formList":formList, "qPriority":qPriority}
+        collectionClassDB.insert(record)
+        aClass = collectionClassDB.find_one({"date": aTime})
+        locId = str(aClass.get('_id'))
+        locList = collectionAccounts.get("classList")
+        locList.append(locId)
+        collectionAccounts.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"classList":locList}}
+        )
+        d = "added"
+    elif setting == "removeClass":
+        classId = request.args.get('classId',0,type=str)
+        collectionClassDB.remove({"_id":ObjectId(classId)})
+        locList = collectionAccounts.get("classList")
+        locList.remove(classId)
+        collectionAccounts.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"classList":locList}}
+        )
+        d = "removed"
+    elif setting == "setPriorities":
+        classId = request.args.get('classId',0,type=str)
+        priorityList = classId = request.args.get('priorityList',0,type=str)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"qPriority":priorityList}}
+        )
+        d = "priority updated"
+    else:
+        d =" wat"
+    return jsonify(result = d)
+
+@app.route("/_formSettings")
+def formSettings():
+    setting = request.args.get('setting',0,type=str)
+    if setting == "addForm":
+        parentId = request.args.get('parentId',0,type=str)
+        dictResponse = request.args.get('dictResponse',0,type=str)
+        aTime = arrow.utcnow().naive
+        record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
+        collectionFormsDB.insert(record)
+        aForm = collectionClassDB.find_one({"date": aTime})
+        locId = str(aForm.get('_id'))
+        locList = collectionClassDB.get("formList")
+        locList.append(locId)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(parentId)},
+            {"$set": {"formList":locList}}
+        )
+        d = "added"
+    else:
+        d = "wat"
+    return jsonify(result = d)
+
+###############################################################################
+###############################################################################
+
 
 
 ##############################
