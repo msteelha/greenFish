@@ -156,6 +156,21 @@ def adminSettings():
 ###############################################################################
 ####################------READY FOR TESTING------##############################
 
+
+##
+#    requests:
+#       setting
+#           "addClass"
+#               get "className"
+#               return "added"
+#           "removeClass"
+#               get "classId"
+#               return "removed" | "failed" (for future)
+#          "setPriorities"
+#              get "classId"
+#              return "priority updated"
+#
+
 @app.route("/_classDBSettings")
 def classDBSettings():
     setting = request.args.get('setting',0,type=str)
@@ -168,7 +183,7 @@ def classDBSettings():
         collectionClassDB.insert(record)
         aClass = collectionClassDB.find_one({"date": aTime})
         locId = str(aClass.get('_id'))
-        locList = collectionAccounts.get("classList")
+        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
         locList.append(locId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -178,7 +193,8 @@ def classDBSettings():
     elif setting == "removeClass":
         classId = request.args.get('classId',0,type=str)
         collectionClassDB.remove({"_id":ObjectId(classId)})
-        locList = collectionAccounts.get("classList")
+        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        ### add checker for if ID exists
         locList.remove(classId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -187,7 +203,7 @@ def classDBSettings():
         d = "removed"
     elif setting == "setPriorities":
         classId = request.args.get('classId',0,type=str)
-        priorityList = classId = request.args.get('priorityList',0,type=str)
+        priorityList = request.args.get('priorityList',0,type=str)
         collectionClassDB.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"qPriority":priorityList}}
@@ -196,6 +212,17 @@ def classDBSettings():
     else:
         d =" wat"
     return jsonify(result = d)
+
+
+##
+#    settings
+#        addForm
+#            get parentId
+#            get dictResponse
+#            return "added"
+#        getPriorities
+#            get parentId
+#            return "priorities gathered"
 
 @app.route("/_formSettings")
 def formSettings():
