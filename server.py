@@ -16,15 +16,10 @@ import arrow # Replacement for datetime, based on moment.js
 #import datetime # But we still need time
 #from dateutil import tz  # For interpreting local times
 
-# Our own module
-#import pre  # Preprocess schedule file
-
-
 ###
 # Globals
 ###
 app = flask.Flask(__name__)
-#schedule = "static/schedule.txt"  # This should be configurable
 import CONFIG
 
 
@@ -33,13 +28,14 @@ app.secret_key = str(uuid.uuid4())
 app.debug = CONFIG.DEBUG
 app.logger.setLevel(logging.DEBUG)
 
-
+with open('static/questions.txt','r') as inf:
+    questions = eval(inf.read())
 try:
     dbclient = MongoClient(CONFIG.MONGO_URL)
     db = dbclient.service
-    collectionTeamBuildList = db.tbl
+    collectionClassDB = db.classDB
     collectionAccounts = db.adminAccounts
-    collectionTeamBuilds = db.teamBuilds
+    collectionFormsDB = db.forms
 except:
     print("Failure opening database.  Is Mongo running? Correct password?")
     #sys.exit(1)
@@ -62,7 +58,15 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-    return flask.render_template('client.html')
+    if flask.sesion.get("questions") == None:
+        flask.session['questions'] = questions
+### ADDED OPTION FOR TWO PAGES FOR FORMS ###
+### ONE PRE PRIORITY, ONE POST ###
+
+    if flask.session.get('priorityList') == None:
+        return flask.render_template('client.html')
+    else:
+        return flask.render_template('client.html')
 
 ### Admin Page ###
 
@@ -128,10 +132,13 @@ def adminSettings():
     adminName = request.args.get('adminName',0,type=str)
     adminKey = request.args.get('adminKey',0,type=str)
     if setting  == "addAdmin":
-        tbl = [] #a list of team builder object ids for the administrator
-        record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "teamBuildList": tbl}
-        collectionAccounts.insert(record)
-        d = {'result':'added'}
+        classList = [] #a list of team builder object ids for the administrator
+        if collectionAccounts.find_one({'name':adminName}) == None:
+            record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "classList": classList}
+            collectionAccounts.insert(record)
+            d = "added"
+        else:
+            d = "account exists"
     elif setting == "removeAdmin":
         collectionAccounts.remove({'_id':flask.session.get('login')})
         flask.session['name'] = None
@@ -142,9 +149,114 @@ def adminSettings():
         flask.session['login'] = None
         return flask.redirect(url_for('login'))
     else:
-        d = {'result':'wat'}
-    d = json.dumps(d)
+        d = "wat"
     return jsonify(result = d)
+
+
+###############################################################################
+####################------READY FOR TESTING------##############################
+
+
+##
+#    requests:
+#       setting
+#           "addClass"
+#               get "className"
+#               return "added"
+#           "removeClass"
+#               get "classId"
+#               return "removed" | "failed" (for future)
+#          "setPriorities"
+#              get "classId"
+#              return "priority updated"
+#
+
+@app.route("/_classDBSettings")
+def classDBSettings():
+    setting = request.args.get('setting',0,type=str)
+    if setting == "addClass":
+        className = request.args.get('className',0,type=str)
+        qPriority = [0,0,0,0,0,0,0,0,0,0]
+        aTime = arrow.utcnow().naive
+        formList = []
+        record = {"name": className, "date":aTime , "formList":formList, "qPriority":qPriority}
+        collectionClassDB.insert(record)
+        aClass = collectionClassDB.find_one({"date": aTime})
+        locId = str(aClass.get('_id'))
+        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        locList.append(locId)
+        collectionAccounts.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"classList":locList}}
+        )
+        d = "added"
+    elif setting == "removeClass":
+        classId = request.args.get('classId',0,type=str)
+        collectionClassDB.remove({"_id":ObjectId(classId)})
+        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        ### add checker for if ID exists
+        locList.remove(classId)
+        collectionAccounts.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"classList":locList}}
+        )
+        d = "removed"
+    elif setting == "setPriorities":
+        classId = request.args.get('classId',0,type=str)
+        priorityList = request.args.get('priorityList',0,type=str)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(flask.session.get('login'))},
+            {"$set": {"qPriority":priorityList}}
+        )
+        d = "priority updated"
+    else:
+        d =" wat"
+    return jsonify(result = d)
+
+
+##
+#    settings
+#        addForm
+#            get parentId
+#            get dictResponse
+#            return "added"
+#        getPriorities
+#            get parentId
+#            return "priorities gathered"
+
+@app.route("/_formSettings")
+def formSettings():
+    setting = request.args.get('setting',0,type=str)
+    if setting == "addForm":
+        parentId = request.args.get('parentId',0,type=str)
+        dictResponse = request.args.get('dictResponse',0,type=str)
+        aTime = arrow.utcnow().naive
+        record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
+        collectionFormsDB.insert(record)
+        aForm = collectionFormsDB.find_one({"date": aTime})
+        locId = str(aForm.get('_id'))
+        aClass = collectionClassDB.find_one({"_id":parentId})
+        locList = aClass.get("formList")
+        locList.append(locId)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(parentId)},
+            {"$set": {"formList":locList}}
+        )
+        flask.session['priorityList'] = None
+        d = "added"
+    elif setting == "getPriorities":
+        parentId = request.args.get('parentId',0,type=str)
+        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
+        aList = aClass.get("priorityList")
+        flask.session['priorityList'] = aList
+        d = "priorities gathered"
+    else:
+        d = "wat"
+    return jsonify(result = d)
+
+###############################################################################
+###############################################################################
+
 
 
 ##############################
