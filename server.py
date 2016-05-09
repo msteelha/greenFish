@@ -168,14 +168,30 @@ def adminSettings():
 #               return "removed" | "failed" (for future)
 #          "setPriorities"
 #              get "classId"
-#              return "priority updated"
+#              return "priorty updated"
 #
 
 @app.route("/_classDBSettings")
-def classDBSettings():
+def preSettings():
+    setting = None
+    className = None
+    classId = None
+    priorityList = None
     setting = request.args.get('setting',0,type=str)
     if setting == "addClass":
         className = request.args.get('className',0,type=str)
+    elif setting == "removeClass":
+        classId = request.args.get('classId',0,type=str)
+    elif setting == "setPriorities":
+        classId = request.args.get('classId',0,type=str)
+        priorityList = request.args.get('priorityList',0,type=str)
+    else:
+        print("wat")
+    d = classDBSettings(setting,className,classId,priorityList)
+    return jsonify(result = d)
+
+def classDBSettings(setting,className,classId,priorityList):
+    if setting == "addClass":
         qPriority = [0,0,0,0,0,0,0,0,0,0]
         aTime = arrow.utcnow().naive
         formList = []
@@ -191,7 +207,6 @@ def classDBSettings():
         )
         d = "added"
     elif setting == "removeClass":
-        classId = request.args.get('classId',0,type=str)
         collectionClassDB.remove({"_id":ObjectId(classId)})
         locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
         ### add checker for if ID exists
@@ -202,8 +217,6 @@ def classDBSettings():
         )
         d = "removed"
     elif setting == "setPriorities":
-        classId = request.args.get('classId',0,type=str)
-        priorityList = request.args.get('priorityList',0,type=str)
         collectionClassDB.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"qPriority":priorityList}}
@@ -211,8 +224,7 @@ def classDBSettings():
         d = "priority updated"
     else:
         d =" wat"
-    return jsonify(result = d)
-
+    return d
 
 ##
 #    settings
@@ -225,11 +237,22 @@ def classDBSettings():
 #            return "priorities gathered"
 
 @app.route("/_formSettings")
-def formSettings():
+def preForms():
+    parentId = None
+    dictResponse = None
     setting = request.args.get('setting',0,type=str)
     if setting == "addForm":
         parentId = request.args.get('parentId',0,type=str)
         dictResponse = request.args.get('dictResponse',0,type=str)
+    elif setting == "getPriorities":
+        parentId = request.args.get('parentId',0,type=str)
+    else:
+        print("wat")
+    d = formSettings(setting,parentId,dictResponse)
+    return jsonify(result = d)
+
+def formSettings(setting,parentId,dictResponse):
+    if setting == "addForm":
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
         collectionFormsDB.insert(record)
@@ -245,14 +268,13 @@ def formSettings():
         flask.session['priorityList'] = None
         d = "added"
     elif setting == "getPriorities":
-        parentId = request.args.get('parentId',0,type=str)
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
         aList = aClass.get("priorityList")
         flask.session['priorityList'] = aList
         d = "priorities gathered"
     else:
         d = "wat"
-    return jsonify(result = d)
+    return d
 
 ###############################################################################
 ###############################################################################
