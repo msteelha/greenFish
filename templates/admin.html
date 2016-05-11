@@ -1,10 +1,133 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <title>Admin</title>
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/styling.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>
-    <h1>Admin Page</h1>
-    <p>This is just a placeholder page</p>
+
+<!--NAV BAR-->	
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+   	<a class="navbar-brand" href="#">Team Builder</a>
+   	<ul class="nav navbar-nav">
+        <li><a href="#">My Forms</a></li>
+        <li><a href="#">Create Form</a></li>
+      </ul>
+   	<form class="navbar-form navbar-right" action="/_adminSettings" method="get">
+  		<button name="setting" type="submit" value="logout" class="btn btn-default">Logout</button>
+	</form>
+  </div>
+</nav>
+    
+<div class="container">
+
+  <!--RIGHT SIDE - LIST OF FORMS-->
+  <div class="col-md-4">
+    <h1><small>My Forms</small></h1>
+    <br>
+  
+    {% if session.myClassDB %}
+
+    <div class="list-group">
+
+  	  {% for memo in session.myClassDB %}
+      <button type="button" class="list-group-item">{{ memo.myClassName }}</button>
+      {% endfor %}
+
+    </div>
+
+    <div class="form-group">
+      <button type="button" class="btn btn-info">View Results</button>
+    </div> 
+
+    {% else %}
+
+    <p>You have no forms currently published. (example below)
+    
+    <div class="list-group">
+      <button type="button" class="list-group-item"><span class="badge">14/30</span>CIS 422</button>
+      <button type="button" class="list-group-item"><span class="badge">0/10</span>CIS 412</button>
+      <button type="button" class="list-group-item"><span class="badge">27/32</span>CIS 315</button>
+    </div>
+
+    {% endif %}
+
+    <div class="form-group">
+      <button id="btnResults" type="button" class="btn btn-info">View Results</button>
+    </div>    
+
+  </div>
+
+  <!--EMPTY SPACE-->
+  <div class="col-md-1"></div>
+
+  <!--LEFT SIDE - CREATE NEW FORM-->
+  <div class="col-md-7">
+  	<h1><small>Create New Form</small></h1>
+  	<br>
+
+  	<div class="input-group">
+      <input type="text" class="form-control" aria-label="..." placeholder="Enter Question 1...">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Weighting <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="#">0</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+          <li><a href="#">5</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="input-group">
+      <input type="text" class="form-control" aria-label="..." placeholder="Enter Question 2...">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Weighting <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="#">0</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+          <li><a href="#">5</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="input-group">
+      <input type="text" class="form-control" aria-label="..." placeholder="Enter Question 3...">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Weighting <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="#">0</a></li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+          <li><a href="#">5</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button id="btnContinue" type="button" class="btn btn-info">Continue</button>
+    </div> 
+
+  </div>	
+
+</div>
 </body>
 </html>

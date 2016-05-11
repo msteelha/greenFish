@@ -10,6 +10,16 @@
 </head>
 
 <body>
+
+<!--NAV BAR-->  
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <a class="navbar-brand" href="#">Team Builder</a>
+  </form>
+  </div>
+</nav>
+
+
 <div class="container-fluid bg-1 text-center">
 <h1>Login Page</h1>
 <p>Enter your key for the Administrator</p>
@@ -21,6 +31,8 @@
     <input id="myBtn" type="button" value="requestAccess">
 </form>
     <a href="/createAdmin">New Admin?</a>
+
+    
   <script type="text/javascript">
 
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
