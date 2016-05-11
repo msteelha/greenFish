@@ -173,20 +173,10 @@ def adminSettings():
 
 @app.route("/_classDBSettings")
 def preSettings():
-    setting = None
-    className = None
-    classId = None
-    priorityList = None
     setting = request.args.get('setting',0,type=str)
-    if setting == "addClass":
-        className = request.args.get('className',0,type=str)
-    elif setting == "removeClass":
-        classId = request.args.get('classId',0,type=str)
-    elif setting == "setPriorities":
-        classId = request.args.get('classId',0,type=str)
-        priorityList = request.args.get('priorityList',0,type=str)
-    else:
-        print("wat")
+    className = request.args.get('className',0,type=str)
+    classId = request.args.get('classId',0,type=str)
+    priorityList = request.args.get('priorityList',0,type=str)
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
 
