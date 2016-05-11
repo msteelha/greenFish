@@ -145,6 +145,9 @@ def adminSettings():
         else:
             d = "account exists"
     elif setting == "removeAdmin":
+        aClassList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        for aVal in aClassList:
+            deleteForms(aVal)
         collectionAccounts.remove({'_id':flask.session.get('login')})
         removeState()
         return flask.redirect(url_for('login'))
@@ -206,9 +209,7 @@ def classDBSettings(setting,className,classId,priorityList):
         collectionClassDB.remove({"_id":ObjectId(classId)})
         locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
         ### add checker for if ID exists
-        formList = collectionClassDB.find_one({"_id":classId}).get("formList")
-        for fId in formList:
-            collectionFormsDB.remove({"_id":fId})
+        deleteForms(classId)
         locList.remove(classId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -225,6 +226,11 @@ def classDBSettings(setting,className,classId,priorityList):
         d =" wat"
     return d
 
+def deleteForms(classId):
+    formList = collectionClassDB.find_one({"_id":classId}).get("formList")
+    for fId in formList:
+        collectionFormsDB.remove({"_id":fId})
+    return
 ##
 #    settings
 #        addForm
