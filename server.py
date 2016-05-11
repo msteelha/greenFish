@@ -76,11 +76,16 @@ def admin():
     app.logger.debug(flask.session.get('login'))
     if flask.session.get('login') == None:
         return flask.render_template('login.html')
+    classList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+    accList = []
+    for aId in classList:
+        accList.append(str(collectionClassDB.find_one({"_id":aId}).get("_id")))
+    flask.session['myClassDB'] = accList
     return flask.render_template('admin.html')
 
 @app.route('/login')
 def login():
-    if flask.session.get('login') == True:
+    if flask.session.get('login') != None:
         return flask.redirect(url_for('admin'))
     else:
         return flask.render_template('login.html')
@@ -141,18 +146,19 @@ def adminSettings():
             d = "account exists"
     elif setting == "removeAdmin":
         collectionAccounts.remove({'_id':flask.session.get('login')})
-        flask.session['name'] = None
-        flask.session['login'] = None
+        removeState()
         return flask.redirect(url_for('login'))
     elif setting == "logout":
-        flask.session['name'] = None
-        flask.session['login'] = None
+        removeState()
         return flask.redirect(url_for('login'))
     else:
         d = "wat"
     return jsonify(result = d)
 
-
+def removeState():
+    flask.session['name'] = None
+    flask.session['login'] = None
+    flask.session['myClassDB'] = None
 ###############################################################################
 ####################------READY FOR TESTING------##############################
 
@@ -271,6 +277,11 @@ def formSettings(setting,parentId,dictResponse):
 def convert_time(timestamp):
     val = arrow.get(timestamp)
     return val.format('h:mm A')
+
+@app.template_filter('classObj')
+def convert_class_id(classId):
+    val = collectionClassDB.find_one({"_id":classId})
+    return val
 
 
 if __name__ == "__main__":
