@@ -238,16 +238,9 @@ def classDBSettings(setting,className,classId,priorityList):
 
 @app.route("/_formSettings")
 def preForms():
-    parentId = None
-    dictResponse = None
     setting = request.args.get('setting',0,type=str)
-    if setting == "addForm":
-        parentId = request.args.get('parentId',0,type=str)
-        dictResponse = request.args.get('dictResponse',0,type=str)
-    elif setting == "getPriorities":
-        parentId = request.args.get('parentId',0,type=str)
-    else:
-        print("wat")
+    parentId = request.args.get('parentId',0,type=str)
+    dictResponse = request.args.get('dictResponse',0,type=str)
     d = formSettings(setting,parentId,dictResponse)
     return jsonify(result = d)
 
