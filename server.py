@@ -206,6 +206,9 @@ def classDBSettings(setting,className,classId,priorityList):
         collectionClassDB.remove({"_id":ObjectId(classId)})
         locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
         ### add checker for if ID exists
+        formList = collectionClassDB.find_one({"_id":classId}).get("formList")
+        for fId in formList:
+            collectionFormsDB.remove({"_id":fId})
         locList.remove(classId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -267,8 +270,6 @@ def formSettings(setting,parentId,dictResponse):
 
 ###############################################################################
 ###############################################################################
-
-
 
 ##############################
 ##########Filters#############
