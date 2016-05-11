@@ -290,6 +290,15 @@ def convert_class_id(classId):
     val = collectionClassDB.find_one({"_id":classId})
     return val
 
+@app.template_filter('getPriorList')
+def get_priorityList(classId):
+    val = collectionClassDB.find_one({"_id":classId}).get("qPriority")
+    return val
+
+@app.template_filter('formInfo')
+def convert_form_id(formId):
+    val = collectionFormsDB.find_one({"_id":formId})
+    return val
 
 if __name__ == "__main__":
     import uuid
