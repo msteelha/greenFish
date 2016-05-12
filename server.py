@@ -76,11 +76,16 @@ def admin():
     app.logger.debug(flask.session.get('login'))
     if flask.session.get('login') == None:
         return flask.render_template('login.html')
+    classList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+    accList = []
+    for aId in classList:
+        accList.append(str(collectionClassDB.find_one({"_id":aId}).get("_id")))
+    flask.session['myClassDB'] = accList
     return flask.render_template('admin.html')
 
 @app.route('/login')
 def login():
-    if flask.session.get('login') == True:
+    if flask.session.get('login') != None:
         return flask.redirect(url_for('admin'))
     else:
         return flask.render_template('login.html')
@@ -140,19 +145,23 @@ def adminSettings():
         else:
             d = "account exists"
     elif setting == "removeAdmin":
+        aClassList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        for aVal in aClassList:
+            deleteForms(aVal)
         collectionAccounts.remove({'_id':flask.session.get('login')})
-        flask.session['name'] = None
-        flask.session['login'] = None
+        removeState()
         return flask.redirect(url_for('login'))
     elif setting == "logout":
-        flask.session['name'] = None
-        flask.session['login'] = None
+        removeState()
         return flask.redirect(url_for('login'))
     else:
         d = "wat"
     return jsonify(result = d)
 
-
+def removeState():
+    flask.session['name'] = None
+    flask.session['login'] = None
+    flask.session['myClassDB'] = None
 ###############################################################################
 ####################------READY FOR TESTING------##############################
 
@@ -168,14 +177,20 @@ def adminSettings():
 #               return "removed" | "failed" (for future)
 #          "setPriorities"
 #              get "classId"
-#              return "priority updated"
+#              return "priorty updated"
 #
 
 @app.route("/_classDBSettings")
-def classDBSettings():
+def preSettings():
     setting = request.args.get('setting',0,type=str)
+    className = request.args.get('className',0,type=str)
+    classId = request.args.get('classId',0,type=str)
+    priorityList = request.args.get('priorityList',0,type=str)
+    d = classDBSettings(setting,className,classId,priorityList)
+    return jsonify(result = d)
+
+def classDBSettings(setting,className,classId,priorityList):
     if setting == "addClass":
-        className = request.args.get('className',0,type=str)
         qPriority = [0,0,0,0,0,0,0,0,0,0]
         aTime = arrow.utcnow().naive
         formList = []
@@ -191,10 +206,10 @@ def classDBSettings():
         )
         d = "added"
     elif setting == "removeClass":
-        classId = request.args.get('classId',0,type=str)
         collectionClassDB.remove({"_id":ObjectId(classId)})
         locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
         ### add checker for if ID exists
+        deleteForms(classId)
         locList.remove(classId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -202,8 +217,6 @@ def classDBSettings():
         )
         d = "removed"
     elif setting == "setPriorities":
-        classId = request.args.get('classId',0,type=str)
-        priorityList = request.args.get('priorityList',0,type=str)
         collectionClassDB.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"qPriority":priorityList}}
@@ -211,9 +224,13 @@ def classDBSettings():
         d = "priority updated"
     else:
         d =" wat"
-    return jsonify(result = d)
+    return d
 
-
+def deleteForms(classId):
+    formList = collectionClassDB.find_one({"_id":classId}).get("formList")
+    for fId in formList:
+        collectionFormsDB.remove({"_id":fId})
+    return
 ##
 #    settings
 #        addForm
@@ -225,11 +242,15 @@ def classDBSettings():
 #            return "priorities gathered"
 
 @app.route("/_formSettings")
-def formSettings():
+def preForms():
     setting = request.args.get('setting',0,type=str)
+    parentId = request.args.get('parentId',0,type=str)
+    dictResponse = request.args.get('dictResponse',0,type=str)
+    d = formSettings(setting,parentId,dictResponse)
+    return jsonify(result = d)
+
+def formSettings(setting,parentId,dictResponse):
     if setting == "addForm":
-        parentId = request.args.get('parentId',0,type=str)
-        dictResponse = request.args.get('dictResponse',0,type=str)
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
         collectionFormsDB.insert(record)
@@ -245,19 +266,16 @@ def formSettings():
         flask.session['priorityList'] = None
         d = "added"
     elif setting == "getPriorities":
-        parentId = request.args.get('parentId',0,type=str)
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
         aList = aClass.get("priorityList")
         flask.session['priorityList'] = aList
         d = "priorities gathered"
     else:
         d = "wat"
-    return jsonify(result = d)
+    return d
 
 ###############################################################################
 ###############################################################################
-
-
 
 ##############################
 ##########Filters#############
@@ -267,6 +285,20 @@ def convert_time(timestamp):
     val = arrow.get(timestamp)
     return val.format('h:mm A')
 
+@app.template_filter('classObj')
+def convert_class_id(classId):
+    val = collectionClassDB.find_one({"_id":classId})
+    return val
+
+@app.template_filter('getPriorList')
+def get_priorityList(classId):
+    val = collectionClassDB.find_one({"_id":classId}).get("qPriority")
+    return val
+
+@app.template_filter('formInfo')
+def convert_form_id(formId):
+    val = collectionFormsDB.find_one({"_id":formId})
+    return val
 
 if __name__ == "__main__":
     import uuid
