@@ -1,10 +1,107 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Client</title>
+<html>
+<head>
+  <title>Student Form</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 
-<body>
-    <h1>Client Page</h1>
-    <p>This is just a placeholder page</p>
+<body  style="padding:20 20 20 20">
+  	<h1>Instructions:...<p></p></h1>
+  	<form id="ID_check"><!--Want to hide this if its a correct form ID-->
+    Enter Form Number: <input type="text" id="formID"><br>
+    <input id="formBtn" type="button" value="Get Form">
+  	</form>
+ 	<form id="response">
+	{% for weightedlist in session.priorityList %} <!--not sure if this is right-->
+	{% if weightedlist[0]>0 %}
+	  <div class="row">
+  		<label for="usr">Name:</label>
+  		<input type="text" class="form-control" id="usr" style="width:300px">
+	  </div>
+	{% endif %}
+	{% if weightedlist[1]>0 %}
+	  <div class="row">
+		<label for="avail">Select Availability (hold shift to select more than one):</label><br>
+    	<select multiple class="form-control" id="avail" style="width:350px">
+        	<!--<option>Monday 10:00 am</option>
+        	<option>Monday 11:00 am</option>
+        	<option>Monday 12:00 pm</option>
+        	<option>Monday 12:00 pm</option>
+        	<option>Monday 1:00 pm</option>
+        	<option>Monday 2:00 pm</option>
+        	<option>Monday 3:00 pm</option>
+        	<option>Monday 4:00 pm</option>
+        	<option>Monday 5:00 pm</option>
+        	<option>Monday 6:00 pm</option>
+        	<option>Monday 7:00 pm</option>
+        	<option>Monday 8:00 pm</option>
+        	<option>Tuesday 10:00 am</option>
+        	<option>Tuesday 11:00 am</option>
+        	<option>Tuesday 12:00 pm</option>
+        	<option>Tuesday 12:00 pm</option>
+        	<option>Tuesday 1:00 pm</option>
+        	<option>Tuesday 2:00 pm</option>
+        	<option>Tuesday 3:00 pm</option>
+        	<option>Tuesday 4:00 pm</option>
+        	<option>Tuesday 5:00 pm</option>
+        	<option>Tuesday 6:00 pm</option>
+        	<option>Tuesday 7:00 pm</option>
+        	<option>Tuesday 8:00 pm</option>
+	  		<option>Wednesday 10:00 am</option>
+        	<option>Wednesday 11:00 am</option>
+        	<option>Wednesday 12:00 pm</option>
+        	<option>Wednesday 12:00 pm</option>
+        	<option>Wednesday 1:00 pm</option>
+        	<option>Wednesday 2:00 pm</option>
+        	<option>Wednesday 3:00 pm</option>
+        	<option>Wednesday 4:00 pm</option>
+        	<option>Wednesday 5:00 pm</option>
+        	<option>Wednesday 6:00 pm</option>
+        	<option>Wednesday 7:00 pm</option>
+        	<option>Wednesday 8:00 pm</option>-->
+		    <option>Morning</option>
+        	<option>Afternoon</option>
+        	<option>Evenin</option>
+    	</select>
+	</div>
+	{% endif %}
+	{% if weightedlist[2]>0 %}
+	<div class="row">
+		<label>Skill Level:</label>
+		<select name="skill" id="skill">
+  			<option value="Master">Master</option>
+  			<option value="Experienced">Experienced</option>
+  			<option value="Novice">Novice</option>
+  			<option value="New">New</option>
+		</select>
+	</div>
+	{% endif %}
+	{% endfor %}
+	<div class="row">
+		<input id="formBtn" type="button" value="Submit">
+	</div>
+  </form>
 </body>
+<script type="text/javascript">
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+   $('#formBtn').click(
+   		function sendId(){var _id = $('#formID').val();
+	 	$.getJSON($SCRIPT_ROOT + "/_formSettings", {setting: "getPriorities", parentId: _id}, 
+	 	function(data){});
+	);
+
+	$(document).ready(function(){
+    	$("#formBtn").click(function(){
+		    var _id = $('#formID').val();
+			var name = $("#usr").val();
+          	var availability = $("#avail").val();
+          	var skill = $("skill").val();
+			$.getJSON($SCRIPT_ROOT + '/_formSettings',
+            { setting: "addForm", parentId: _id, responseDict: {q1: name, q2: availability, q3: skill}},
+            function(data) {}); // End of the call to getJSON
+         });  // End of the function to be called when field changes
+     });   // end of what we do on document ready
+</script><!-- borrowed from elsewhere not sure if its right -->
 </html>

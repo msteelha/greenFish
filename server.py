@@ -58,7 +58,7 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-    if flask.sesion.get("questions") == None:
+    if flask.session.get("questions") == None:
         flask.session['questions'] = questions
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
