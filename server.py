@@ -58,7 +58,7 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-    if flask.session.get("questions") == None:
+    if flask.sesion.get("questions") == None:
         flask.session['questions'] = questions
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
@@ -76,10 +76,10 @@ def admin():
     app.logger.debug(flask.session.get('login'))
     if flask.session.get('login') == None:
         return flask.render_template('login.html')
-    classList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+    classList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
     accList = []
     for aId in classList:
-        accList.append(str(collectionClassDB.find_one({"_id":aId}).get("_id")))
+        accList.append(str(collectionClassDB.find_one({"_id":ObjectId(aId)}).get("_id")))
     flask.session['myClassDB'] = accList
     return flask.render_template('admin.html')
 
@@ -145,10 +145,10 @@ def adminSettings():
         else:
             d = "account exists"
     elif setting == "removeAdmin":
-        aClassList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        aClassList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
         for aVal in aClassList:
             deleteForms(aVal)
-        collectionAccounts.remove({'_id':flask.session.get('login')})
+        collectionAccounts.remove({'_id':ObjectId(flask.session.get('login'))})
         removeState()
         return flask.redirect(url_for('login'))
     elif setting == "logout":
@@ -198,7 +198,7 @@ def classDBSettings(setting,className,classId,priorityList):
         collectionClassDB.insert(record)
         aClass = collectionClassDB.find_one({"date": aTime})
         locId = str(aClass.get('_id'))
-        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        locList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
         locList.append(locId)
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
@@ -207,7 +207,7 @@ def classDBSettings(setting,className,classId,priorityList):
         d = "added"
     elif setting == "removeClass":
         collectionClassDB.remove({"_id":ObjectId(classId)})
-        locList = collectionAccounts.find_one({"_id":flask.session.get('login')}).get("classList")
+        locList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
         ### add checker for if ID exists
         deleteForms(classId)
         locList.remove(classId)
@@ -227,9 +227,9 @@ def classDBSettings(setting,className,classId,priorityList):
     return d
 
 def deleteForms(classId):
-    formList = collectionClassDB.find_one({"_id":classId}).get("formList")
+    formList = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("formList")
     for fId in formList:
-        collectionFormsDB.remove({"_id":fId})
+        collectionFormsDB.remove({"_id":ObjectId(fId)})
     return
 ##
 #    settings
@@ -256,7 +256,7 @@ def formSettings(setting,parentId,dictResponse):
         collectionFormsDB.insert(record)
         aForm = collectionFormsDB.find_one({"date": aTime})
         locId = str(aForm.get('_id'))
-        aClass = collectionClassDB.find_one({"_id":parentId})
+        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
         locList = aClass.get("formList")
         locList.append(locId)
         collectionClassDB.update_one(
@@ -287,17 +287,17 @@ def convert_time(timestamp):
 
 @app.template_filter('classObj')
 def convert_class_id(classId):
-    val = collectionClassDB.find_one({"_id":classId})
+    val = collectionClassDB.find_one({"_id":ObjectId(classId)})
     return val
 
 @app.template_filter('getPriorList')
 def get_priorityList(classId):
-    val = collectionClassDB.find_one({"_id":classId}).get("qPriority")
+    val = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("qPriority")
     return val
 
 @app.template_filter('formInfo')
 def convert_form_id(formId):
-    val = collectionFormsDB.find_one({"_id":formId})
+    val = collectionFormsDB.find_one({"_id":ObjectId(formId)})
     return val
 
 if __name__ == "__main__":
