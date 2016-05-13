@@ -292,11 +292,7 @@ def convert_class_id(classId):
 
 @app.template_filter('getPriorList')
 def get_priorityList(classId):
-<<<<<<< HEAD
-    val = collectionClassDB.find_one({"_id":classId}).get("qPriority")
-=======
     val = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("qPriority")
->>>>>>> 6b10509f4a2dda615dca995967881678b62e844c
     return val
 
 @app.template_filter('formInfo')
