@@ -8,3 +8,11 @@
 	margin-right: 15px;
 	margin-top: 20px;
 }
+
+ul.nav li a {
+	color: gray;
+}
+
+ul.nav li.active a, ul.nav li.active a:hover {
+	color: #5bc0de;
+}	

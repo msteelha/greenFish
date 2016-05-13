@@ -33,12 +33,12 @@
     <h1><small>My Forms</small></h1>
     <br>
   
-    {% if session.myClassDB %}
-
+    {% if session.myClassDB != 'None' %}
+    <p>Session worked
     <div class="list-group">
 
-  	  {% for memo in session.myClassDB %}
-      <button type="button" class="list-group-item">{{ memo.myClassName }}</button>
+  	  {% for classList in session.myClassDB %}
+      <button type="button" class="list-group-item">{{ classList.className }}</button>
       {% endfor %}
 
     </div>
