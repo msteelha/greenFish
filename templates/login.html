@@ -11,18 +11,39 @@
 </head>
 
 <body>
-<div class="container-fluid bg-1 text-center">
-<h1>Login Page</h1>
-<p>Enter your key for the Administrator</p>
+
+<!--NAV BAR-->
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <a class="navbar-brand" href="#">Team Builder</a>
+  </form>
+  </div>
+</nav>
+
+<!--LOGIN / SIGNUP BAR-->
+<br><br><br>
+<div class="container text-center bg-nav">
+  <div class="col-md-4 col-md-offset-4 vertical-center">
+    <div class="panel panel-default">
+      <!--switch between log in and sign up-->
+      <ul class="nav nav-tabs nav-justified">
+        <li role="presentation" class="active"><a href="/login"><b>LOG IN</b></a></li>
+        <li role="presentation"><a href="/createAdmin"><b>SIGN UP</b></a></li>
+      </ul>
+      <br>
+      <!--form for user to input name and password-->
+      <div class="panel-body">
+        <form id="myForm">
+          <input type="text" id="adminName" name="adminName" class="form-control input-lg"placeholder="Username"><br>
+          <input type="password" id="adminKey" name="adminKey" class="form-control input-lg" placeholder="Password"><br>
+          <input id="myBtn" class="btn btn-info btn-lg btn-block" type="button" value="requestAccess">
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="container-fluid bg-2">
-    <form id="myForm">
-    Name: <input type="text" id="adminName" name="adminName"><br>
-    Password: <input type="password" id="adminKey" name="adminKey"><br><br>
-    <input id="myBtn" type="button" value="requestAccess">
-</form>
-    <a href="/createAdmin">New Admin?</a>
-  <script type="text/javascript">
+
+<script type="text/javascript">
 
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
