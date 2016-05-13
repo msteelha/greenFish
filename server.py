@@ -58,7 +58,7 @@ def index():
 @app.route("/client")
 def client():
     app.logger.debug("client page entry")
-    if flask.session.get("questions") == None:
+    if flask.sesion.get("questions") == None:
         flask.session['questions'] = questions
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
@@ -229,7 +229,7 @@ def classDBSettings(setting,className,classId,priorityList):
 def deleteForms(classId):
     formList = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("formList")
     for fId in formList:
-        collectionFormsDB.remove({"_id":fId})
+        collectionFormsDB.remove({"_id":ObjectId(fId)})
     return
 ##
 #    settings
