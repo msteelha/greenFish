@@ -83,6 +83,11 @@ def admin():
     flask.session['myClassDB'] = accList
     return flask.render_template('admin.html')
 
+@app.route("/adminCreate")
+def adminCreate():
+    app.logger.debug("admin create page entry")
+    return flask.render_template('adminCreate.html')    
+
 @app.route('/login')
 def login():
     if flask.session.get('login') != None:
@@ -191,10 +196,10 @@ def preSettings():
 
 def classDBSettings(setting,className,classId,priorityList):
     if setting == "addClass":
-        qPriority = [0,0,0,0,0,0,0,0,0,0]
+        #qPriority = [0,0,0,0,0,0,0,0,0,0]
         aTime = arrow.utcnow().naive
         formList = []
-        record = {"name": className, "date":aTime , "formList":formList, "qPriority":qPriority}
+        record = {"name": className, "date":aTime , "formList":formList, "qPriority":priorityList}
         collectionClassDB.insert(record)
         aClass = collectionClassDB.find_one({"date": aTime})
         locId = str(aClass.get('_id'))
@@ -292,11 +297,7 @@ def convert_class_id(classId):
 
 @app.template_filter('getPriorList')
 def get_priorityList(classId):
-<<<<<<< HEAD
-    val = collectionClassDB.find_one({"_id":classId}).get("qPriority")
-=======
     val = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("qPriority")
->>>>>>> 6b10509f4a2dda615dca995967881678b62e844c
     return val
 
 @app.template_filter('formInfo')
