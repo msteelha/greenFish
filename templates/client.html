@@ -14,35 +14,226 @@
     <input id="formBtn" type="button" value="Get Form">
       </form>
      <form id="response">
-    {% for weightedlist in session.priorityList %} <!--not sure if this is right-->
-    {% if weightedlist[0]>0 %}
+    <div style="padding:20 20 20 20">
       <div class="row">
           <label for="usr">Name:</label>
           <input type="text" class="form-control" id="usr" style="width:300px">
       </div>
-    {% endif %}
-    {% if weightedlist[1]>0 %}
       <div class="row">
+          <label for="st_id">ID #:</label>
+          <input type="text" class="form-control" id="st_id" style="width:300px">
+      </div>
+      <div class="row">
+          <label for="email">Email:</label>
+          <input type="text" class="form-control" id="email" style="width:300px">
+        </div>
+        </div><!--end padding div-->
+      <div class="row" style="padding: 20 20 20 20;">
         <label for="avail">Select Availability (hold shift to select more than one):</label><br>
-    <select multiple class="form-control" id="avail" style="width:350px">
-        <option>Morning</option>
-        <option>Afternoon</option>
-        <option>Evenin</option>
-    </select>
-    </div>
-    {% endif %}
-    {% if weightedlist[2]>0 %}
-    <div class="row">
-        <label>Skill Level:</label>
-        <select name="skill" id="skill">
-            <option value="Master">Master</option>
-            <option value="Experienced">Experienced</option>
-              <option value="Novice">Novice</option>
-              <option value="New">New</option>
+        <select multiple class="form-control" id="avail" style="width:350px">
+            <option>9:00am - 12:00pm Monday</option>
+            <option>9:00am - 12:00pm Tuesday</option>
+            <option>9:00am - 12:00pm Wednesday</option>
+            <option>9:00am - 12:00pm Thursday</option>
+            <option>9:00am - 12:00pm Friday</option>
+            <option>12:00pm - 5:00pm Monday</option>
+            <option>12:00pm - 5:00pm Tuesday</option>
+            <option>12:00pm - 5:00pm Wednesday</option>
+            <option>12:00pm - 5:00pm Thursday</option>
+            <option>12:00pm - 5:00pm Friday</option>
+            <option>5:00pm - 8:00pm Monday</option>
+            <option>5:00pm - 8:00pm Tuesday</option>
+            <option>5:00pm - 8:00pm Wednesday</option>
+            <option>5:00pm - 8:00pm Thursday</option>
+            <option>5:00pm - 8:00pm Friday</option>
         </select>
     </div>
-    {% endif %}
-    {% endfor %}
+    <div class="row" style="padding: 20 20 20 20;">
+        <p>Grades in CIS courses:</p>
+        <div class="col-sm-4">
+            <label>CIS 313:</label>
+            <select id="313">
+                <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+            <br>
+            <label>CIS 415:</label>
+            <select id="415">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <label>CIS 314:</label>
+            <select id="314">
+                <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+            <br>
+            <label>CIS 425:</label>
+            <select id="425">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <label>CIS 315:</label>
+            <select id="315">
+                <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+            <br>
+            <label>CIS 429:</label>
+            <select id="429">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                <option value="E">E (Currently Enrolled)</option>
+                <option value="NA">N/A</option>
+            </select>
+        </div>
+        <!--put in comment box to add other responses-->
+    </div>
+    <div class="row" style="padding: 20 20 20 20;">
+        <p>Languages and Systems</p>
+        <div class="col-sm-3">
+            <label>Java:</label>
+            <select id="java">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>PHP:</label>
+            <select id="php">
+                <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Mongo:</label>
+            <select id="mongo">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label>C++:</label>
+            <select id="c++">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Javascript:</label>
+            <select id="javascript">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Web Server Side(Node, Flask, etc.):</label>
+            <select id="wss">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label>SQL:</label>
+            <select id="sql">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Bash/Sh:</label>
+            <select id="bash">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>GIS:</label>
+            <select id="gis">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label>HTML:</label>
+            <select id="html">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Git:</label>
+            <select id="git">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                  <option value="Z">Little/No Experience</option>
+            </select>
+            <br>
+            <label>Python:</label>
+            <select id="python">
+                  <option value="X">Extensive Experience</option>
+                  <option value="Y">Some Experience</option>
+                <option value="Z">Little/No Experience</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="padding: 20 20 20 20;">
+        <label for="sskills">Select your strongest skills for a team project(hold shift to select more than one):</label><br>
+        <select multiple class="form-control" id="sskills" style="width:350px">
+            <option>Leadership</option>
+            <option>Front-end Development</option>
+            <option>Back-end Development</option>
+        </select>
+    </div>
+    <div class="row" style="padding: 20 20 20 20;">
+        <label for="wskills">Select your weakest skills for a team project(hold shift to select more than one):</label><br>
+        <select multiple class="form-control" id="wskills" style="width:350px">
+            <option>Leadership</option>
+            <option>Front-end Development</option>
+            <option>Back-end Development</option>
+        </select>
+    </div>
+    <div class="row" style="padding: 20 20 20 20;">
+        <label for="roles">In what roles can you best contribute?(hold shift to select more than one):</label><br>
+        <select multiple class="form-control" id="skills" style="width:350px">
+            <option>Team Lead</option>
+            <option>Front-end Development</option>
+            <option>Back-end Development</option>
+        </select>
+    </div>
+    <div class="row" style="padding: 20 20 20 20;">
+          <label for="team">Preferred team member:</label>
+          <input type="text" class="form-control" id="team" style="width:300px">
+    </div>
     <div class="row">
         <input id="formBtn" type="button" value="Submit">
     </div>
@@ -60,10 +251,17 @@
         $("#formBtn").click(function(){
             var _id = $('#formID').val();
             var name = $("#usr").val();
+            var id_num = $('#st_id').val();
+            var email = $('#email').val();
               var availability = $("#avail").val();
-              var skill = $("skill").val();
+            var grades = [$('#313').val(), $('#314').val(), $('#315').val(), $('#415').val(), $('#425').val(), $('#429').val()];
+            var langs = [$('#java').val(), $('#c++').val(), $('#sql').val(), $('#html').val(), $('#php').val(), $('#javascript').val(), $('#bash').val(), $('#git').val(), $('#mongo').val(), $('#wss').val(), $('#gis').val(), $('#python').val()];
+            var streng = $('#sskills').val();
+            var weak = $('#wskills').val();
+            var roles = $('#roles').val();
+            var pref_team = $('#team').val();
             $.getJSON($SCRIPT_ROOT + '/_formSettings',
-            { setting: "addForm", parentId: _id, responseDict: {q1: name, q2: availability, q3: skill}},
+            { setting: "addForm", parentId: _id, responseDict: {1: name, 2: id_num, 3: email, 4: availability, 5: grades, 6: langs, 7: streng, 8: weak, 9: roles, 10: pref_team}},
             function(data) {}); // End of the call to getJSON
          });  // End of the function to be called when field changes
      });   // end of what we do on document ready
