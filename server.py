@@ -243,27 +243,31 @@ def deleteForms(classId):
 
 @app.route("/_formSettings")
 def preForms():
-    setting = request.args.get('setting',0,type=str)
-    parentId = request.args.get('parentId',0,type=str)
-    dictResponse = request.args.get('dictResponse',0,type=str)
+    aReturn = request.args.get('aThing',0,type=str)
+    aVal = json.loads(aReturn)
+    setting = aVal.get("setting")
+    parentId = aVal.get("parentId")
+    dictResponse = aVal.get("dictResponse")
     d = formSettings(setting,parentId,dictResponse)
+    #d = "yes"
     return jsonify(result = d)
 
 def formSettings(setting,parentId,dictResponse):
     if setting == "addForm":
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
-        collectionFormsDB.insert(record)
-        aForm = collectionFormsDB.find_one({"date": aTime})
-        locId = str(aForm.get('_id'))
-        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
-        locList = aClass.get("formList")
-        locList.append(locId)
-        collectionClassDB.update_one(
-            {"_id": ObjectId(parentId)},
-            {"$set": {"formList":locList}}
-        )
-        flask.session['priorityList'] = None
+        print record
+        #collectionFormsDB.insert(record)
+        #aForm = collectionFormsDB.find_one({"date": aTime})
+        #locId = str(aForm.get('_id'))
+        #aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
+        #locList = aClass.get("formList")
+        #locList.append(locId)
+        #collectionClassDB.update_one(
+        #    {"_id": ObjectId(parentId)},
+        #    {"$set": {"formList":locList}}
+        #)
+        #flask.session['priorityList'] = None
         d = "added"
     elif setting == "getPriorities":
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
