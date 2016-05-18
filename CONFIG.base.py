@@ -1,7 +1,7 @@
 """
 Edit to fit development or deployment environment.
 """
-import random 
+import random
 
 ### My local development environment
 #SERVER_NAME = "localhost:5000"
