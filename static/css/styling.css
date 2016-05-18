@@ -1,3 +1,7 @@
+html, body {
+	height: 100%;
+}
+
 #btnResults {
 	float: right;
 	margin-right: 15px;
@@ -7,4 +11,36 @@
 	float: right;
 	margin-right: 15px;
 	margin-top: 20px;
+}
+
+#btnDelete {
+	float: right;
+	margin-top: -8px;
+}
+
+#btnAlgorithm {
+	position: relative;
+	text-align: center;
+}
+
+#questions-div {
+	max-height: 400px;
+	overflow-y: scroll;
+}
+
+#completed-forms {
+	max-height: 330px;
+	overflow-y: scroll;
+}
+
+ul.nav li a {
+	color: gray;
+}
+
+ul.nav li.active a, ul.nav li.active a:hover {
+	color: #5bc0de;
+}	
+
+.list-group {
+	overflow-y: scroll;
 }
