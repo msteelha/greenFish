@@ -42,5 +42,5 @@ ul.nav li.active a, ul.nav li.active a:hover {
 }	
 
 .list-group {
-	overflow-y: scroll;
+/*	overflow-y: scroll;*/
 }
