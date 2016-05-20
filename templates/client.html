@@ -9,9 +9,9 @@
 
 <body  style="padding:20 20 20 20">
       <h1>Instructions:...<p></p></h1>
-      <form id="ID_check"><!--Want to hide this if its a correct form ID-->
+      <form id="Id_check"><!--Want to hide this if its a correct form ID-->
     	Enter Form Number: <input type="text" id="formID"><br>
-    	<input id="formBtn" type="button" value="Get Form">
+    	<input id="formBtn" type="button" value="Get Form" onclick="hide()">
       </form>
      <form id="response">
     <div style="padding:20 20 20 20">
@@ -240,8 +240,12 @@
   </form>
 </body>
 <script type="text/javascript">
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-   $("#formBtn").click(
+	function hide() {
+    	document.getElementById("Id_check").style.display = "none";
+		document.getElementById("Id_check").reset();
+	}
+	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    $("#formBtn").click(
            function sendId(){var _id = $('#formID').val();
          $.getJSON($SCRIPT_ROOT + "/_formSettings", {setting: "getPriorities", parentId: _id},
          function(data){});
@@ -274,6 +278,17 @@
                 url: $SCRIPT_ROOT + '/_formSettings',
                 success: function (e) {
                     console.log(e);
+					var thingy = e['result'];
+					if (thingy!="added"){
+						alert("Your form failed to submit");
+						location.reload();
+					}
+					else{
+						$('body').html("Your form has been succesfully submitted.<br>Await group assignment from your instructor M dizzle");
+					}
+					document.getElementById("response").reset();
+					document.getElementById("Id_check").reset();
+					
                 }
             });
             //$.getJSON($SCRIPT_ROOT + '/_formSettings',

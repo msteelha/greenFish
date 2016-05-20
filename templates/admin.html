@@ -38,7 +38,10 @@
     <div class="list-group">
 
   	  {% for memo in session.myClassDB %}
-      <button type="button" class="list-group-item"><span class="badge">0/30</span> {{ memo | classObj }}</button> <!--need to update span-->
+	  {% set testing =  memo | classObj %}
+	<div class="formContainer">
+      <button type="button" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button> <!--need to update span-->
+	</div>
       {% endfor %}
 
     </div>
