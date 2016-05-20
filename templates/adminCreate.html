@@ -24,7 +24,7 @@
 	</form>
   </div>
 </nav>
-    
+
 <div class="container">
 <div class="row">
   <!--LEFT SIDE - CREATE NEW FORM-->
@@ -282,7 +282,7 @@
     });
 
     $("#btnContinue").click(function(){
-      
+
       //fields entered
       var className = document.getElementById("class-name").value;
       //TODO: for loop which assigns weight 0 if null (when question not used)
@@ -297,22 +297,23 @@
       var q9weight = document.getElementById("weight9").value;
       var q10weight = document.getElementById("weight10").value;
       var weights = [q1weight,q2weight,q3weight,q4weight,q5weight,q6weight,q7weight,q8weight,q9weight,q10weight];
+      var preJson = {setting:'addClass', className:className, classId:'123',priorityList:weights};
       alert(className);
 
       //send to backend
       $.getJSON($SCRIPT_ROOT + '/_classDBSettings',
-        {setting:'addClass', className:className, classId:'123',priorityList:weights},
+        {aThing: JSON.stringify(preJson)},
         function(data) {
           var result = data.result;
           alert(result);
           //obj = JSON.parse(result);
-          //alert("Got a response: " + result); 
+          //alert("Got a response: " + result);
         });
 
     });
   });
 
-</script>  
+</script>
 
 </body>
 </html>

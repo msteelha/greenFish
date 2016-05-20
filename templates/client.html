@@ -7,13 +7,13 @@
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 
-<body  style="padding:20 20 20 20">
+<body style="padding:20 20 20 20">
       <h1>Instructions:...<p></p></h1>
-      <form id="Id_check"><!--Want to hide this if its a correct form ID-->
-    	Enter Form Number: <input type="text" id="formID"><br>
-    	<input id="formBtn" type="button" value="Get Form" onclick="hide()">
-      </form>
-     <form id="response">
+        <input id="Id_pass" type="hidden" value="">
+    <div id="theForm">
+    {% if session.priorityList != None %}
+
+    <form id="response">
     <div style="padding:20 20 20 20">
       <div class="row">
           <label for="usr">Name:</label>
@@ -238,21 +238,34 @@
         <input id="submitBtn" type="button" value="Submit">
     </div>
   </form>
+    {%else%}
+      <form id="Id_check"><!--Want to hide this if its a correct form ID-->
+    Enter Form Number: <input type="text" id="formID"><br>
+    <input id="formBtn" type="button" value="Get Form">
+      </form>
+
+  {%endif%}
+    </div>
 </body>
 <script type="text/javascript">
-	function hide() {
-    	document.getElementById("Id_check").style.display = "none";
-		document.getElementById("Id_check").reset();
-	}
-	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    $("#formBtn").click(
-           function sendId(){var _id = $('#formID').val();
-         $.getJSON($SCRIPT_ROOT + "/_formSettings", {setting: "getPriorities", parentId: _id},
-         function(data){});
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+$("#formBtn").click(function(){
+        var _id = $('#formID').val();
+        var aVar = JSON.stringify({setting: "getPriorities", parentId: _id});
+        $.getJSON($SCRIPT_ROOT + "/_formSettings",
+        {aThing: aVar},
+        function(data){
+        if(data['result']=="true"){
+            document.getElementById("Id_check").style.display = "none";
+            document.getElementById("Id_pass").value = _id;
+            document.getElementById("Id_check").reset();
+            window.location.reload(false);
+        }
+    });
 });
     $(document).ready(function(){
         $("#submitBtn").click(function(){
-            var _id = $('#formID').val();
+            var _id = $('#Id_pass').val();
             var name = $("#usr").val();
             var id_num = $('#st_id').val();
             var email = $('#email').val();
@@ -278,22 +291,19 @@
                 url: $SCRIPT_ROOT + '/_formSettings',
                 success: function (e) {
                     console.log(e);
-					var thingy = e['result'];
-					if (thingy!="added"){
-						alert("Your form failed to submit");
-						location.reload();
-					}
-					else{
-						$('body').html("Your form has been succesfully submitted.<br>Await group assignment from your instructor M dizzle");
-					}
-					document.getElementById("response").reset();
-					document.getElementById("Id_check").reset();
-					
+                    var thingy = e['result'];
+                    if (thingy!="added"){
+                        alert("Your form failed to submit");
+                        location.reload();
+                    }
+                    else{
+                        $('body').html("Your form has been succesfully submitted.<br>Await group assignment from your instructor M dizzle");
+                    }
+                    document.getElementById("response").reset();
+                    document.getElementById("Id_check").reset();
+
                 }
             });
-            //$.getJSON($SCRIPT_ROOT + '/_formSettings',
-            //JSON.stringify(preJson),
-            //function(data) {}); // End of the call to getJSON
          });  // End of the function to be called when field changes
      });   // end of what we do on document ready
 </script>

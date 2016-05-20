@@ -60,6 +60,8 @@ def client():
     app.logger.debug("client page entry")
     if flask.session.get("questions") == None:
         flask.session['questions'] = questions
+    if flask.session.get('priorityList') == None:
+        flask.session['priorityList'] = None
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
 
@@ -86,7 +88,7 @@ def admin():
 @app.route("/adminCreate")
 def adminCreate():
     app.logger.debug("admin create page entry")
-    return flask.render_template('adminCreate.html')    
+    return flask.render_template('adminCreate.html')
 
 @app.route('/login')
 def login():
@@ -110,6 +112,16 @@ def page_not_found(error):
 ################
 
 ###for index page###
+@app.route("/_createTeams")
+def preTeamCreate():
+    classId = request.args.get('classID',0, type=str)
+    groupSizeMax = request.args.get('groupSizeMax',0, type=str)
+    d = createTeams(classId,groupSizeMax);
+    print(d)
+    d = "yes"
+    return jsonify(result = d)
+
+
 @app.route("/_portal")
 def portalSelector():
     objId = request.args.get('portal', 0, type=str)
@@ -167,8 +179,9 @@ def removeState():
     flask.session['name'] = None
     flask.session['login'] = None
     flask.session['myClassDB'] = None
+
+
 ###############################################################################
-####################------READY FOR TESTING------##############################
 
 
 ##
@@ -187,10 +200,13 @@ def removeState():
 
 @app.route("/_classDBSettings")
 def preSettings():
-    setting = request.args.get('setting',0,type=str)
-    className = request.args.get('className',0,type=str)
-    classId = request.args.get('classId',0,type=str)
-    priorityList = request.args.get('priorityList',0,type=str)
+    aReturn = request.args.get('aThing',0,type=str)
+    aVal = json.loads(aReturn)
+    setting = aVal.get("setting")
+    className = aVal.get("className")
+    classId = aVal.get("classId")
+    priorityList = aVal.get("priorityList")
+    print priorityList
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
 
@@ -262,23 +278,24 @@ def formSettings(setting,parentId,dictResponse):
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
         print record
-        #collectionFormsDB.insert(record)
-        #aForm = collectionFormsDB.find_one({"date": aTime})
-        #locId = str(aForm.get('_id'))
-        #aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
-        #locList = aClass.get("formList")
-        #locList.append(locId)
-        #collectionClassDB.update_one(
-        #    {"_id": ObjectId(parentId)},
-        #    {"$set": {"formList":locList}}
-        #)
-        #flask.session['priorityList'] = None
+        collectionFormsDB.insert(record)
+        aForm = collectionFormsDB.find_one({"date": aTime})
+        locId = str(aForm.get('_id'))
+        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
+        locList = aClass.get("formList")
+        locList.append(locId)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(parentId)},
+            {"$set": {"formList":locList}}
+        )
+        flask.session['priorityList'] = None
         d = "added"
     elif setting == "getPriorities":
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
-        aList = aClass.get("priorityList")
+        aList = aClass.get('qPriority')
+        print aList
         flask.session['priorityList'] = aList
-        d = "priorities gathered"
+        d = "true"
     else:
         d = "wat"
     return d
@@ -286,6 +303,43 @@ def formSettings(setting,parentId,dictResponse):
 ###############################################################################
 ###############################################################################
 
+def funcTest(aClass,priority):
+    return initGraph(aClass,1)
+
+funcList = []
+funcList.append(funcTest)
+
+def createTeams(classId,groupSizeMax):
+    #initialize graph
+    aClass = convert_class_id(classId)
+    compGraph = initGraph(aClass,0)
+    #loop through questions
+    #for x in range(0,len(aClass.get('qPriority'))):
+    for x in range(0,1):
+        if aClass.get('qPriority')[x] == 0:
+            continue
+        else:
+            addVals = funcList[x](aClass,1)
+            compGraph = addGraphNums(compGraph,addVals)
+    return getTeams(compGraph,groupSizeMax)
+
+def initGraph(aClass,weight):
+    compGraph = []
+    for x in range(0,len(aClass.get('formList'))):
+        innerList = []
+        for y in range(0,len(aClass.get('formList'))):
+            innerList.append(weight)
+        compGraph.append(innerList)
+    return compGraph
+
+def addGraphNums(graphOne,graphTwo):
+    for row in range (len(graphOne)):
+        for col in range(len(graphOne)):
+            graphOne[row][col] = graphOne[row][col] + graphTwo[row][col]
+    return graphOne
+
+def getTeams(compGraph,groupSizeMax):
+    return compGraph
 ##############################
 ##########Filters#############
 ##############################
