@@ -12,17 +12,17 @@
 
 <body>
 
-<!--NAV BAR-->	
+<!--NAV BAR-->  
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
-   	<a class="navbar-brand" href="#">Team Builder</a>
-   	<ul class="nav navbar-nav">
+    <a class="navbar-brand" href="#">Team Builder</a>
+    <ul class="nav navbar-nav">
         <li class="active"><a href="/admin">My Forms</a></li>
         <li><a href="/adminCreate">Create Form</a></li>
       </ul>
-   	<form class="navbar-form navbar-right" action="/_adminSettings" method="get">
-  		<button name="setting" type="submit" value="logout" class="btn btn-default">Logout</button>
-	</form>
+    <form class="navbar-form navbar-right" action="/_adminSettings" method="get">
+      <button name="setting" type="submit" value="logout" class="btn btn-default">Logout</button>
+  </form>
   </div>
 </nav>
 
@@ -37,11 +37,13 @@
     {% if session.myClassDB != 'None' %}
     <div class="list-group">
 
-  	  {% for memo in session.myClassDB %}
-	  {% set testing =  memo | classObj %}
-	<div class="formContainer">
+      {% for memo in session.myClassDB %}
+    {% set testing =  memo | classObj %}
+  <div class="formContainer">
       <button type="button" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button> <!--need to update span-->
-	</div>
+      <input id="teamSize" placeholder="Max Team Size"></input>
+      <button id="btnAlgorithm" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>
+  </div>
       {% endfor %}
 
     </div>
@@ -50,7 +52,7 @@
 
     <p>You do not have any forms published.
 
-    {% endif %} 
+    {% endif %}
 
   </div>
 
@@ -59,10 +61,10 @@
 
   <!--RIGHT SIDE - RESULTS VIEW-->
   <div class="col-md-7">
-  	<h1><small>Results</small></h1>
-  	<br>
+    <h1><small>Results</small></h1>
+    <br>
 
-      <!-- form ID and delete button -->  
+      <!-- form ID and delete button -->
       <div class="well well-sm">
         <h4><small><b>Form ID:</b> 129564560</small>
         <button id="btnDelete" type="button" class="btn btn-info">Delete Form</button></h4>
@@ -76,7 +78,7 @@
       </div>
 
       <hr>
-      
+
       <div class="row">
 
       <!--list of completed forms for viewing (will be clickable)-->
@@ -103,10 +105,10 @@
           <p>You have not allocated teams yet. Click below to run the team building algorithm.
           <br><br>
           <button id="btnAlgorithm" type="button" class="btn btn-info">RUN</button>
-        </div>  
+        </div>
       </div>
 
-  </div>	
+  </div>  
 </div>
 
 </div>
@@ -123,20 +125,29 @@
 
 
     $("#btnAlgorithm").click(function(){
-      
-      //run team building algorithm
+        var classID = $(this).attr('mongoID');
+        var groupSizeMax= $(this).prev().val();
+        console.log(classID);
+        console.log(groupSizeMax);
 
+         $.getJSON($SCRIPT_ROOT + '/_createTeams',
+            // The object to pass to the server
+            {classID: classID, groupSizeMax: groupSizeMax},
+                  // The function to call with the response
+                  function(data) {
+                        console.log(data);
+                  }); // End of the call to getJSON
     });
 
     $("#btnDelete").click(function(){
-      
+
       //delete the form
 
     });
 
   });
 
-</script>  
+</script>
 
 </body>
 </html>
