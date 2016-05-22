@@ -9,25 +9,34 @@
 
 <body  style="padding:20 20 20 20">
       <h1>Instructions:...<p></p></h1>
-      <form id="Id_check"><!--Want to hide this if its a correct form ID-->
+      <form id="Id_check">
     	Enter Form Number: <input type="text" id="formID"><br>
     	<input id="formBtn" type="button" value="Get Form" onclick="hide()">
       </form>
      <form id="response">
+	{% for list in session %}
     <div style="padding:20 20 20 20">
+		{% if list[0] > 0 %}
       <div class="row">
           <label for="usr">Name:</label>
           <input type="text" class="form-control" id="usr" style="width:300px">
       </div>
+		{% endif %}
+		{% if list[1] > 0 %}
       <div class="row">
           <label for="st_id">ID #:</label>
           <input type="text" class="form-control" id="st_id" style="width:300px">
       </div>
+		{% endif %}
+		{% if list[2] > 0 %}
       <div class="row">
           <label for="email">Email:</label>
           <input type="text" class="form-control" id="email" style="width:300px">
         </div>
+		{% endif %}
         </div><!--end padding div-->
+		{% endif %}
+		{% if list[3] > 0 %}
       <div class="row" style="padding: 20 20 20 20;">
         <label for="avail">Select Availability (hold shift to select more than one):</label><br>
         <select multiple class="form-control" id="avail" style="width:350px">
@@ -48,6 +57,8 @@
             <option value=53>5:00pm - 8:00pm Friday</option>
         </select>
     </div>
+		{% endif %}
+		{% if list[4] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
         <p>Grades in CIS courses:</p>
         <div class="col-sm-4">
@@ -115,6 +126,8 @@
         </div>
         <!--put in comment box to add other responses-->
     </div>
+		{% endif %}
+		{% if list[5] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
         <p>Languages and Systems</p>
         <div class="col-sm-3">
@@ -206,6 +219,8 @@
             </select>
         </div>
     </div>
+		{% endif %}
+		{% if list[6] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
         <label for="sskills">Select your strongest skills for a team project(hold shift to select more than one):</label><br>
         <select multiple class="form-control" id="sskills" style="width:350px">
@@ -214,6 +229,8 @@
             <option value="backEndDev">Back-end Development</option>
         </select>
     </div>
+		{% endif %}
+		{% if list[7] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
         <label for="wskills">Select your weakest skills for a team project(hold shift to select more than one):</label><br>
         <select multiple class="form-control" id="wskills" style="width:350px">
@@ -222,6 +239,8 @@
             <option value="backEndDev">Back-end Development</option>
         </select>
     </div>
+		{% endif %}
+		{% if list[8] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
         <label for="roles">In what roles can you best contribute?(hold shift to select more than one):</label><br>
         <select multiple class="form-control" id="roles" style="width:350px">
@@ -230,10 +249,14 @@
             <option value="backEnd">Back-end Development</option>
         </select>
     </div>
+		{% endif %}
+		{% if list[9] > 0 %}
     <div class="row" style="padding: 20 20 20 20;">
           <label for="team">Preferred team member:</label>
           <input type="text" class="form-control" id="team" style="width:300px">
     </div>
+		{% endif %}
+		{% endfor %}
     <div class="row">
         <input id="submitBtn" type="button" value="Submit">
     </div>
