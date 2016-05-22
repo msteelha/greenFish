@@ -6,6 +6,7 @@ from flask import jsonify # For AJAX transactions
 import json
 import logging
 
+import random
 # Mongo database
 import pymongo
 from pymongo import MongoClient
@@ -115,7 +116,7 @@ def page_not_found(error):
 @app.route("/_createTeams")
 def preTeamCreate():
     classId = request.args.get('classID',0, type=str)
-    groupSizeMax = request.args.get('groupSizeMax',0, type=str)
+    groupSizeMax = request.args.get('groupSizeMax',0, type=int)
     d = createTeams(classId,groupSizeMax);
     print(d)
     d = "yes"
@@ -321,7 +322,7 @@ def createTeams(classId,groupSizeMax):
         else:
             addVals = funcList[x](aClass,1)
             compGraph = addGraphNums(compGraph,addVals)
-    return getTeams(compGraph,groupSizeMax)
+    return getTeams(aClass,compGraph,groupSizeMax)
 
 def initGraph(aClass,weight):
     compGraph = []
@@ -335,11 +336,50 @@ def initGraph(aClass,weight):
 def addGraphNums(graphOne,graphTwo):
     for row in range (len(graphOne)):
         for col in range(len(graphOne)):
-            graphOne[row][col] = graphOne[row][col] + graphTwo[row][col]
+            graphOne[row][col] = graphOne[row][col] + graphTwo[row][col] #divide by 2
     return graphOne
 
-def getTeams(compGraph,groupSizeMax):
-    return compGraph
+def getTeams(aClass,compGraph,groupSizeMax):
+    hashOfForms = getHash(aClass)
+    randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
+    groupsWithNames = convertNumsToNames(randomTeam,hashOfForms)
+    return groupsWithNames
+
+def getRandomGroup(hashOfForms,groupSizeMax):
+    tempList = []
+    teams = []
+    for x in range(0,len(hashOfForms)):
+        tempList.append(x)
+    while len(tempList) > 0:
+        aTeam = []
+        while len(aTeam) != groupSizeMax:
+            if len(tempList) == 0:
+                break
+            av = random.randint(0,5)
+            if  av == 1:
+                aTeam.append(None)
+            else:
+                aTeam.append(tempList.pop(random.randint(0,len(tempList)-1)))
+        teams.append(aTeam)
+    return teams
+
+def convertNumsToNames(teams,forms):
+    teamNames = []
+    for aTeam in teams:
+        locTeam = []
+        for person in aTeam:
+            if person != None:
+                locTeam.append(forms[person].get('dictResponse').get('1'))
+        teamNames.append(locTeam)
+    return teamNames
+
+def getHash(aClass):
+    aHash = []
+    formList = aClass.get('formList')
+    for x in range(0,len(formList)):
+        aHash.append(convert_form_id(formList[x]))
+    return aHash
+
 ##############################
 ##########Filters#############
 ##############################
