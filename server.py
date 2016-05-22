@@ -6,6 +6,8 @@ from flask import jsonify # For AJAX transactions
 import json
 import logging
 
+import random
+import math
 # Mongo database
 import pymongo
 from pymongo import MongoClient
@@ -60,6 +62,8 @@ def client():
     app.logger.debug("client page entry")
     if flask.session.get("questions") == None:
         flask.session['questions'] = questions
+    if flask.session.get('priorityList') == None:
+        flask.session['priorityList'] = None
 ### ADDED OPTION FOR TWO PAGES FOR FORMS ###
 ### ONE PRE PRIORITY, ONE POST ###
 
@@ -86,7 +90,7 @@ def admin():
 @app.route("/adminCreate")
 def adminCreate():
     app.logger.debug("admin create page entry")
-    return flask.render_template('adminCreate.html')    
+    return flask.render_template('adminCreate.html')
 
 @app.route('/login')
 def login():
@@ -110,6 +114,16 @@ def page_not_found(error):
 ################
 
 ###for index page###
+@app.route("/_createTeams")
+def preTeamCreate():
+    classId = request.args.get('classID',0, type=str)
+    groupSizeMax = request.args.get('groupSizeMax',0, type=int)
+    d = createTeams(classId,groupSizeMax);
+    print(d)
+    d = "yes"
+    return jsonify(result = d)
+
+
 @app.route("/_portal")
 def portalSelector():
     objId = request.args.get('portal', 0, type=str)
@@ -167,8 +181,9 @@ def removeState():
     flask.session['name'] = None
     flask.session['login'] = None
     flask.session['myClassDB'] = None
+
+
 ###############################################################################
-####################------READY FOR TESTING------##############################
 
 
 ##
@@ -187,10 +202,13 @@ def removeState():
 
 @app.route("/_classDBSettings")
 def preSettings():
-    setting = request.args.get('setting',0,type=str)
-    className = request.args.get('className',0,type=str)
-    classId = request.args.get('classId',0,type=str)
-    priorityList = request.args.get('priorityList',0,type=str)
+    aReturn = request.args.get('aThing',0,type=str)
+    aVal = json.loads(aReturn)
+    setting = aVal.get("setting")
+    className = aVal.get("className")
+    classId = aVal.get("classId")
+    priorityList = aVal.get("priorityList")
+    print priorityList
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
 
@@ -262,29 +280,145 @@ def formSettings(setting,parentId,dictResponse):
         aTime = arrow.utcnow().naive
         record = {"parentId":parentId,"dictResponse":dictResponse, "date":aTime,"teamNum": 0}
         print record
-        #collectionFormsDB.insert(record)
-        #aForm = collectionFormsDB.find_one({"date": aTime})
-        #locId = str(aForm.get('_id'))
-        #aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
-        #locList = aClass.get("formList")
-        #locList.append(locId)
-        #collectionClassDB.update_one(
-        #    {"_id": ObjectId(parentId)},
-        #    {"$set": {"formList":locList}}
-        #)
-        #flask.session['priorityList'] = None
+        collectionFormsDB.insert(record)
+        aForm = collectionFormsDB.find_one({"date": aTime})
+        locId = str(aForm.get('_id'))
+        aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
+        locList = aClass.get("formList")
+        locList.append(locId)
+        collectionClassDB.update_one(
+            {"_id": ObjectId(parentId)},
+            {"$set": {"formList":locList}}
+        )
+        flask.session['priorityList'] = None
         d = "added"
     elif setting == "getPriorities":
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
-        aList = aClass.get("priorityList")
+        aList = aClass.get('qPriority')
+        print aList
         flask.session['priorityList'] = aList
-        d = "priorities gathered"
+        d = "true"
     else:
         d = "wat"
     return d
 
 ###############################################################################
 ###############################################################################
+
+def funcTest(aClass,priority):
+    return initGraph(aClass,1)
+
+funcList = []
+funcList.append(funcTest)
+
+def createTeams(classId,groupSizeMax):
+    #initialize graph
+    aClass = convert_class_id(classId)
+    compGraph = initGraph(aClass,0.0)
+    #loop through questions
+    #for x in range(0,len(aClass.get('qPriority'))):
+    for x in range(0,1):
+        if aClass.get('qPriority')[x] == 0:
+            continue
+        else:
+            addVals = funcList[x](aClass,1)
+            compGraph = addGraphNums(compGraph,addVals)
+    return getTeams(aClass,compGraph,groupSizeMax)
+
+def initGraph(aClass,weight):
+    compGraph = []
+    for x in range(0,len(aClass.get('formList'))):
+        innerList = []
+        for y in range(0,len(aClass.get('formList'))):
+            innerList.append(weight)
+        compGraph.append(innerList)
+    return compGraph
+
+def addGraphNums(graphOne,graphTwo):
+    for row in range (len(graphOne)):
+        for col in range(len(graphOne)):
+            graphOne[row][col] = graphOne[row][col] + graphTwo[row][col] #divide by 2
+    return graphOne
+
+def getTeams(aClass,compGraph,groupSizeMax):
+    currTeamScore = -1.0
+    currTeam = []
+    hashOfForms = getHash(aClass)
+    for x in range(0,10):
+        randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
+        theScore = getGroupsScore(randomTeam,compGraph)
+        if theScore > currTeamScore:
+            currTeamScore = theScore
+            print "Changed!"
+            currTeam = randomTeam
+    groupsWithNames = convertNumsToNames(currTeam,hashOfForms)
+    return groupsWithNames
+
+def getGroupsScore(groups,scoreMatrix):
+    score = 0.0
+    for g in groups:
+        outerSol = 0.0
+        count = 0
+        print g
+
+        for val in g:
+            if val != None:
+                count+=1
+        if count < 2:
+            continue
+
+        for x in range(0,len(g)):
+            innerSol = 1.0
+            for y in range(0,len(g)):
+                if x == y or g[x] == None or g[y] == None:
+                    continue
+                else:
+                    innerSol*=(scoreMatrix[g[x]][g[y]])
+            print innerSol
+            outerSol+=(math.pow(innerSol,1/len(g)-1))
+        print outerSol
+        score+=(outerSol/len(g))
+    score /= len(groups)
+    print score
+    return score
+
+def getRandomGroup(hashOfForms,groupSizeMax):
+    tempList = []
+    teams = []
+    for x in range(0,len(hashOfForms)):
+        tempList.append(x)
+    while len(tempList) > 0:
+        aTeam = []
+        count = 0
+        while len(aTeam) != groupSizeMax:
+            if len(tempList) == 0:
+                break
+            av = random.randint(0,5)
+            if  av == 1:
+                aTeam.append(None)
+                count+=1
+            else:
+                aTeam.append(tempList.pop(random.randint(0,len(tempList)-1)))
+        if count != groupSizeMax:
+            teams.append(aTeam)
+    return teams
+
+def convertNumsToNames(teams,forms):
+    teamNames = []
+    for aTeam in teams:
+        locTeam = []
+        for person in aTeam:
+            if person != None:
+                locTeam.append(forms[person].get('dictResponse').get('1'))
+        teamNames.append(locTeam)
+    return teamNames
+
+def getHash(aClass):
+    aHash = []
+    formList = aClass.get('formList')
+    for x in range(0,len(formList)):
+        aHash.append(convert_form_id(formList[x]))
+    return aHash
 
 ##############################
 ##########Filters#############
