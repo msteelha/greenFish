@@ -7,6 +7,7 @@ import json
 import logging
 
 import random
+import math
 # Mongo database
 import pymongo
 from pymongo import MongoClient
@@ -313,7 +314,7 @@ funcList.append(funcTest)
 def createTeams(classId,groupSizeMax):
     #initialize graph
     aClass = convert_class_id(classId)
-    compGraph = initGraph(aClass,0)
+    compGraph = initGraph(aClass,0.0)
     #loop through questions
     #for x in range(0,len(aClass.get('qPriority'))):
     for x in range(0,1):
@@ -340,10 +341,46 @@ def addGraphNums(graphOne,graphTwo):
     return graphOne
 
 def getTeams(aClass,compGraph,groupSizeMax):
+    currTeamScore = -1.0
+    currTeam = []
     hashOfForms = getHash(aClass)
-    randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
-    groupsWithNames = convertNumsToNames(randomTeam,hashOfForms)
+    for x in range(0,10):
+        randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
+        theScore = getGroupsScore(randomTeam,compGraph)
+        if theScore > currTeamScore:
+            currTeamScore = theScore
+            print "Changed!"
+            currTeam = randomTeam
+    groupsWithNames = convertNumsToNames(currTeam,hashOfForms)
     return groupsWithNames
+
+def getGroupsScore(groups,scoreMatrix):
+    score = 0.0
+    for g in groups:
+        outerSol = 0.0
+        count = 0
+        print g
+
+        for val in g:
+            if val != None:
+                count+=1
+        if count < 2:
+            continue
+
+        for x in range(0,len(g)):
+            innerSol = 1.0
+            for y in range(0,len(g)):
+                if x == y or g[x] == None or g[y] == None:
+                    continue
+                else:
+                    innerSol*=(scoreMatrix[g[x]][g[y]])
+            print innerSol
+            outerSol+=(math.pow(innerSol,1/len(g)-1))
+        print outerSol
+        score+=(outerSol/len(g))
+    score /= len(groups)
+    print score
+    return score
 
 def getRandomGroup(hashOfForms,groupSizeMax):
     tempList = []
@@ -352,15 +389,18 @@ def getRandomGroup(hashOfForms,groupSizeMax):
         tempList.append(x)
     while len(tempList) > 0:
         aTeam = []
+        count = 0
         while len(aTeam) != groupSizeMax:
             if len(tempList) == 0:
                 break
             av = random.randint(0,5)
             if  av == 1:
                 aTeam.append(None)
+                count+=1
             else:
                 aTeam.append(tempList.pop(random.randint(0,len(tempList)-1)))
-        teams.append(aTeam)
+        if count != groupSizeMax:
+            teams.append(aTeam)
     return teams
 
 def convertNumsToNames(teams,forms):
