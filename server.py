@@ -308,8 +308,22 @@ def formSettings(setting,parentId,dictResponse):
 def funcTest(aClass,priority):
     return initGraph(aClass,1)
 
+def scoreByPref(aClass,priority):
+    locGraph = initGraph(aClass,0.0)
+    aHash = getHash(aClass)
+    aListOfNames = []
+    for x in range(0,len(aHash)):
+        aListOfNames.append(aHash[x].get('dictResponse').get('1'))
+    for y in range(0,len(aHash)):
+        for z in range(0,len(aListOfNames)):
+            if aHash[y].get('dictResponse').get('10') == aListOfNames[z]:
+                locGraph[y][z] = 1
+    print locGraph
+    return locGraph
+
 funcList = []
 funcList.append(funcTest)
+funcList.append(scoreByPref)
 
 def createTeams(classId,groupSizeMax):
     #initialize graph
@@ -317,7 +331,7 @@ def createTeams(classId,groupSizeMax):
     compGraph = initGraph(aClass,0.0)
     #loop through questions
     #for x in range(0,len(aClass.get('qPriority'))):
-    for x in range(0,1):
+    for x in range(0,2):
         if aClass.get('qPriority')[x] == 0:
             continue
         else:
@@ -337,15 +351,15 @@ def initGraph(aClass,weight):
 def addGraphNums(graphOne,graphTwo):
     for row in range (len(graphOne)):
         for col in range(len(graphOne)):
-            graphOne[row][col] = graphOne[row][col] + graphTwo[row][col] #divide by 2
+            graphOne[row][col] = (graphOne[row][col] + graphTwo[row][col])
     return graphOne
 
 def getTeams(aClass,compGraph,groupSizeMax):
     currTeamScore = -1.0
     currTeam = []
     hashOfForms = getHash(aClass)
-    for x in range(0,10):
-        randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
+    for x in range(0,100):
+        randomTeam = getRandomGroup(hashOfForms,groupSizeMax,2.0)
         theScore = getGroupsScore(randomTeam,compGraph)
         if theScore > currTeamScore:
             currTeamScore = theScore
@@ -355,11 +369,22 @@ def getTeams(aClass,compGraph,groupSizeMax):
     return groupsWithNames
 
 def getGroupsScore(groups,scoreMatrix):
-    score = 0.0
+    score = 0
+    for g in groups:
+        for x in range(0,len(g)):
+            for y in range(0,len(g)):
+                if x == y:
+                    continue
+                else:
+                    score+=(scoreMatrix[g[x]][g[y]])
+    #print score
+    return score
+    """"""""""
+    #bogosort
     for g in groups:
         outerSol = 0.0
         count = 0
-        print g
+        #print g
 
         for val in g:
             if val != None:
@@ -374,19 +399,33 @@ def getGroupsScore(groups,scoreMatrix):
                     continue
                 else:
                     innerSol*=(scoreMatrix[g[x]][g[y]])
-            print innerSol
+            #print innerSol
             outerSol+=(math.pow(innerSol,1/len(g)-1))
-        print outerSol
+        #print outerSol
         score+=(outerSol/len(g))
     score /= len(groups)
     print score
     return score
+    """""""""
 
-def getRandomGroup(hashOfForms,groupSizeMax):
+def getRandomGroup(hashOfForms,groupSizeMax,minGroup):
     tempList = []
     teams = []
     for x in range(0,len(hashOfForms)):
         tempList.append(x)
+    random.shuffle(tempList)
+    numGroups = int(len(tempList)/minGroup)
+    for x in range(0,numGroups):
+        teams.append([])
+    overLoadCount = int(len(tempList) % minGroup)
+    for x in range(0,overLoadCount):
+        teams[x].append(tempList.pop())
+    for x in range(0,int(minGroup)):
+        for y in range(0,numGroups):
+            teams[y].append(tempList.pop())
+    #print teams
+    """"""""""
+    #bogosort
     while len(tempList) > 0:
         aTeam = []
         count = 0
@@ -401,6 +440,8 @@ def getRandomGroup(hashOfForms,groupSizeMax):
                 aTeam.append(tempList.pop(random.randint(0,len(tempList)-1)))
         if count != groupSizeMax:
             teams.append(aTeam)
+    #print convertNumsToNames(teams,hashOfForms)
+    """""""""
     return teams
 
 def convertNumsToNames(teams,forms):
