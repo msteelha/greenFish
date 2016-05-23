@@ -317,13 +317,33 @@ def scoreByPref(aClass,priority):
     for y in range(0,len(aHash)):
         for z in range(0,len(aListOfNames)):
             if aHash[y].get('dictResponse').get('10') == aListOfNames[z]:
-                locGraph[y][z] = 1
+                locGraph[y][z] = (2*priority)
     print locGraph
     return locGraph
 
+def scoreByTime(aClass,priority):
+    locGraph = initGraph(aClass,0.0)
+    aHash = getHash(aClass)
+    playerTimes = []
+    for x in range(0,len(aHash)):
+        playerTimes.append(aHash[x].get('dictResponse').get('4'))
+    for y in range(0,len(playerTimes)):
+        if playerTimes[y] == None:
+            continue
+        for z in range(0,len(playerTimes)):
+            if playerTimes[z] == None:
+                continue
+            for w in range(0,len(playerTimes[y])):
+                if y == z:
+                    continue
+                if playerTimes[y][w] in playerTimes[z]:
+                    locGraph[y][z]+=(1*priority)
+    print locGraph
+    return locGraph
 funcList = []
 funcList.append(funcTest)
 funcList.append(scoreByPref)
+funcList.append(scoreByTime)
 
 def createTeams(classId,groupSizeMax):
     #initialize graph
@@ -331,7 +351,7 @@ def createTeams(classId,groupSizeMax):
     compGraph = initGraph(aClass,0.0)
     #loop through questions
     #for x in range(0,len(aClass.get('qPriority'))):
-    for x in range(0,2):
+    for x in range(0,3):
         if aClass.get('qPriority')[x] == 0:
             continue
         else:
@@ -358,14 +378,16 @@ def getTeams(aClass,compGraph,groupSizeMax):
     currTeamScore = -1.0
     currTeam = []
     hashOfForms = getHash(aClass)
-    for x in range(0,100):
+    for x in range(0,100000):
         randomTeam = getRandomGroup(hashOfForms,groupSizeMax,2.0)
         theScore = getGroupsScore(randomTeam,compGraph)
         if theScore > currTeamScore:
             currTeamScore = theScore
             print "Changed!"
+            print currTeamScore
             currTeam = randomTeam
     groupsWithNames = convertNumsToNames(currTeam,hashOfForms)
+    print currTeamScore
     return groupsWithNames
 
 def getGroupsScore(groups,scoreMatrix):
