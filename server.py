@@ -208,6 +208,11 @@ def preSettings():
     className = aVal.get("className")
     classId = aVal.get("classId")
     priorityList = aVal.get("priorityList")
+    for x in range(0,len(priorityList)):
+        if priorityList[x] == None:
+            priorityList[x] = 0
+        else:
+            priorityList[x] = int(priorityList[x])
     print priorityList
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
