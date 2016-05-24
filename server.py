@@ -295,7 +295,6 @@ def formSettings(setting,parentId,dictResponse):
     elif setting == "getPriorities":
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
         aList = aClass.get('qPriority')
-        print aList
         flask.session['priorityList'] = aList
         d = "true"
     else:
