@@ -1,5 +1,4 @@
 #Welcome to greenFish!
-<<<<<<< HEAD
 Creators: Chris Brooks, Ellie BirBeck, Ian Garrett, and Molly Steelhammer
   greenFish is a team building web app that allows instructors of a CIS 422 class form ideal teams. The instructor sets the priority of each question, then provides their students with the form ID and after there are enough submissions the instructor can run the match making algorithm and sort the class into teams of a given ideal size.
 ##Summary of Design
