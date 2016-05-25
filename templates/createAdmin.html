@@ -15,8 +15,7 @@
 <!--NAV BAR-->
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
-    <a class="navbar-brand" href="#">Team Builder</a>
-  </form>
+    <a class="navbar-brand" href="/index">Team Builder</a>
   </div>
 </nav>
 
@@ -36,7 +35,7 @@
         <form id="myForm">
           <input type="text" id="adminName" name="adminName" class="form-control input-lg"placeholder="Username"><br>
           <input type="password" id="adminKey" name="adminKey" class="form-control input-lg" placeholder="Password"><br>
-          <input id="myBtn" class="btn btn-info btn-lg btn-block" type="button" value="addAdmin">
+            <a href="/login"><input id="myBtn" class="btn btn-info btn-lg btn-block" type="button" value="Create Account"></a>
         </form>
       </div>
     </div>
@@ -60,7 +59,7 @@
                         alert("invalid username or password, please try again");
                          }
                     else{
-                        window.location = "/admin"
+                        window.location = "/login"
                         }
 
                   }); // End of the call to getJSON

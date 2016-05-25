@@ -8,6 +8,7 @@
 </head>
 
 <body style="padding:20 20 20 20">
+    {% if session.priorityList != None %}
     <h1>Instructions:  </h1><p>Fill out the form below to the best of your ability. For availability, select all times that are available for you. For strengths and weaknesses, pick your top 3 if you have more than one or 2. For roles, select all that you feel comfortable filling (this isn't set in stone to be the only thing you will do this term). </p>
     <h4>The Roles Are:</h4><p>
     <b>Manager: </b>The project manager is chiefly responsible for the project schedule (and, in an industrial setting, the budget). The manager does not need to be the "boss", though in industry it often works that way. The key thing the manager needs to be paying attention to, throughout the project, is the project plan and how actual progress compares to the plan.
@@ -34,29 +35,44 @@
     <b>Programmer: </b>The programmer is, as the saying goes "where the rubber meets the road." The programmer is responsible for turning the need for system capabilities into something a computer with actually run. It should be clear, however, from the other roles, that the programmer cannot act independently. Rather he/she is responsible for realizing, as closely as possible, the requirements and designs developed by the team. This helps ensure that what the programmer produces is what the stakeholders actually want.</p>
     <input id="Id_pass" type="hidden" value="">
     <div id="theForm">
-    {% if session.priorityList != None %}
     <form id="response">
     <div style="padding:20 20 20 20">
+<<<<<<< HEAD
+    {% if session.priorityList[0] > 0 %}
+=======
     {% if session.priorityList[0] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
       <div class="row">
           <label for="usr">Name:</label>
           <input type="text" class="form-control" id="usr" style="width:300px">
       </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[1] > 0 %}
+=======
     {% if session.priorityList[1] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
       <div class="row">
           <label for="st_id">ID #:</label>
           <input type="text" class="form-control" id="st_id" style="width:300px">
       </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[2] > 0 %}
+=======
     {% if session.priorityList[2] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
       <div class="row">
           <label for="email">Email:</label>
           <input type="text" class="form-control" id="email" style="width:300px">
         </div>
     {% endif %}
         </div><!--end padding div-->
+<<<<<<< HEAD
+    {% if session.priorityList[3] > 0 %}
+=======
     {% if session.priorityList[3] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
       <div class="row" style="padding: 20 20 20 20;">
         <label for="avail">Select Availability (hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="avail" style="width:350px">
@@ -78,7 +94,11 @@
         </select>
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[4] > 0 %}
+=======
     {% if session.priorityList[4] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
         <p>Grades in CIS courses:</p>
         <div class="col-sm-4">
@@ -147,7 +167,11 @@
         <!--put in comment box to add other responses-->
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[5] > 0 %}
+=======
     {% if session.priorityList[5] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
         <p>Languages and Systems</p>
         <div class="col-sm-3">
@@ -240,7 +264,11 @@
         </div>
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[6] > 0 %}
+=======
     {% if session.priorityList[6] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
         <label for="sskills">Select your strengths for a team project(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="sskills" style="width:350px">
@@ -255,7 +283,11 @@
         </select>
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[7] > 0 %}
+=======
     {% if session.priorityList[7] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
         <label for="wskills">Select your weaknesses for a team project(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="wskills" style="width:350px">
@@ -270,7 +302,11 @@
         </select>
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[8] > 0 %}
+=======
     {% if session.priorityList[8] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
         <label for="roles">In what roles can you best contribute?(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="roles" style="width:350px">
@@ -285,7 +321,11 @@
         </select>
     </div>
     {% endif %}
+<<<<<<< HEAD
+    {% if session.priorityList[9] > 0 %}
+=======
     {% if session.priorityList[9] != 0 %}
+>>>>>>> 230f885a565f09564ffb76d823e4ad32c9451b87
     <div class="row" style="padding: 20 20 20 20;">
           <label for="team">Preferred team member:</label>
           <input type="text" class="form-control" id="team" style="width:300px">
@@ -295,14 +335,17 @@
         <input id="submitBtn" type="button" value="Submit">
     </div>
   </form>
-    {%else%}
+    {%else%} 
+        <h1>Instructions:  </h1><h3>The Form Number should be given to you by your instructor.</h3>
+        <input id="Id_pass" type="hidden" value="">
+        <div id="theForm">
       <form id="Id_check">
     Enter Form Number: <input type="text" id="formID"><br>
     <input id="formBtn" type="button" value="Get Form">
       </form>
-
+        </div>
   {%endif%}
-    </div>
+        </div>
 </body>
 <script type="text/javascript">
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
