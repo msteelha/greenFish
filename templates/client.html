@@ -8,11 +8,33 @@
 </head>
 
 <body style="padding:20 20 20 20">
-      <h1>Instructions:...<p></p></h1>
-        <input id="Id_pass" type="hidden" value="">
+    <h1>Instructions:  </h1><p>Fill out the form below to the best of your ability. For availability, select all times that are available for you. For strengths and weaknesses, pick your top 3 if you have more than one or 2. For roles, select all that you feel comfortable filling (this isn't set in stone to be the only thing you will do this term). </p>
+    <h4>The Roles Are:</h4><p>
+    <b>Manager: </b>The project manager is chiefly responsible for the project schedule (and, in an industrial setting, the budget). The manager does not need to be the "boss", though in industry it often works that way. The key thing the manager needs to be paying attention to, throughout the project, is the project plan and how actual progress compares to the plan.
+    <br>
+    <br>
+    <b>System architect: </b>The system architect is responsible for understanding the overall structure of the software system: How it is divided into parts, and how the parts fit together. A good, modular system design allows most developers to think just about their own part, most of the time. The architect is constantly keeping an eye on the bigger picture of how things fit together.
+    <br>
+    <br>
+    <b>Requirements analyst: </b>The requirements analyst is responsible for understanding and communicating the system requirements. The system requirements define, as precisely as possible, the functional behavior and qualities (e.g., performance, ease of use, etc.) that a system must have. The requirements analyst is responsible for identifying the system stakeholders, eliciting requirements, establishing priorities among requirements, and documenting them in a way that is access able to the key stakeholders. Note that this does not mean that the analyst makes the decisions about what should be requirements and their relative priorities, rather he/she determines these in collaboration with the stakeholders including other team members.
+    <br>
+    <br>
+    <b>Quality control: </b>Someone needs to be making sure, all through the project, that quality goals are likely to be met. This might include producing a good integration and test plan and making sure it is executed, managing design and code inspections during development, requiring good unit test suites with each module, etc.
+    <br>
+    <br>
+    <b>Technical documentation: </b>Technical documentation is documentation written for developers and maintainers of a system, rather than documentation written for users of the system. This may include everything from formal requirements and design documents to README files and comments in program code. As with quality control, the person who takes primary responsibility for technical documentation is not likely to do all the work him- or herself. The responsibility is for making sure it gets done well and on time, probably by coordinating the work of several people.
+    <br>
+    <br>
+    <b>User documentation: </b>User documentation is documentation for users of a software system. Often it involves more than one group of user. For example, if one were producing a web-based application, both end-users of the system (using the service through a web browser) and administrators of the system (configuring and running the service on a web server) would be users, and they would require quite different documentation. User documentation may include conventional user manuals, online help, web-based documents and FAQs, and perhaps other forms of information.
+    <br>
+    <br>
+    <b>User interface: </b>Ideally, a software project would have access to usability experts in a usability lab. Often we don't, but it's still worthwhile to have someone take special responsibility for consideration of interface issues. Decisions in other areas often have usability and user interface consequences that are easily overlooked; the UI master is responsible for making sure they aren't overlooked.
+    <br>
+    <br>
+    <b>Programmer: </b>The programmer is, as the saying goes "where the rubber meets the road." The programmer is responsible for turning the need for system capabilities into something a computer with actually run. It should be clear, however, from the other roles, that the programmer cannot act independently. Rather he/she is responsible for realizing, as closely as possible, the requirements and designs developed by the team. This helps ensure that what the programmer produces is what the stakeholders actually want.</p>
+    <input id="Id_pass" type="hidden" value="">
     <div id="theForm">
     {% if session.priorityList != None %}
-    {{session.priorityList}}
     <form id="response">
     <div style="padding:20 20 20 20">
     {% if session.priorityList[0] != 0 %}
@@ -36,7 +58,7 @@
         </div><!--end padding div-->
     {% if session.priorityList[3] != 0 %}
       <div class="row" style="padding: 20 20 20 20;">
-        <label for="avail">Select Availability (hold shift to select more than one):</label><br>
+        <label for="avail">Select Availability (hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="avail" style="width:350px">
             <option  value=11>9:00am - 12:00pm Monday</option><!--value=<day><time> so 11 is first day earliest time-->
             <option value=21>9:00am - 12:00pm Tuesday</option>
@@ -220,31 +242,46 @@
     {% endif %}
     {% if session.priorityList[6] != 0 %}
     <div class="row" style="padding: 20 20 20 20;">
-        <label for="sskills">Select your strongest skills for a team project(hold shift to select more than one):</label><br>
+        <label for="sskills">Select your strengths for a team project(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="sskills" style="width:350px">
-            <option value="leadership">Leadership</option>
+            <option value="organization">Organization</option>
             <option value="frontEndDev">Front-end Development</option>
             <option value="backEndDev">Back-end Development</option>
+            <option value="coding">Coding</option>
+            <option value="algorithms">Algorithms</option>
+            <option value="optimization">Optimization</option>
+            <option value="uiDesign">User Interface Design</option>
+            <option value="debugging">Testing and Debugging</option>
         </select>
     </div>
     {% endif %}
     {% if session.priorityList[7] != 0 %}
     <div class="row" style="padding: 20 20 20 20;">
-        <label for="wskills">Select your weakest skills for a team project(hold shift to select more than one):</label><br>
+        <label for="wskills">Select your weaknesses for a team project(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="wskills" style="width:350px">
-            <option value="leadership">Leadership</option>
+            <option value="organization">Organization</option>
             <option value="frontEndDev">Front-end Development</option>
             <option value="backEndDev">Back-end Development</option>
+            <option value="coding">Coding</option>
+            <option value="algorithms">Algorithms</option>
+            <option value="optimization">Optimization</option>
+            <option value="uiDesign">User Interface Design</option>
+            <option value="debugging">Testing and Debugging</option>
         </select>
     </div>
     {% endif %}
     {% if session.priorityList[8] != 0 %}
     <div class="row" style="padding: 20 20 20 20;">
-        <label for="roles">In what roles can you best contribute?(hold shift to select more than one):</label><br>
+        <label for="roles">In what roles can you best contribute?(hold ctrl/command to select more than one):</label><br>
         <select multiple class="form-control" id="roles" style="width:350px">
-            <option value="lead">Team Lead</option>
-            <option value="frontEnd">Front-end Development</option>
-            <option value="backEnd">Back-end Development</option>
+            <option value="manager">Manager</option>
+            <option value="programmer">Programmer</option>
+            <option value="ui">User Interface</option>
+            <option value="systemArchitect">System Architect</option>
+            <option value="qualityControl">Quality control</option>
+            <option value="tDoc">Technical Documentation</option>
+            <option value="uDoc">User Documentation</option>
+            
         </select>
     </div>
     {% endif %}
