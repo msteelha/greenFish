@@ -120,7 +120,7 @@ def preTeamCreate():
     groupSizeMax = request.args.get('groupSizeMax',0, type=int)
     d = createTeams(classId,groupSizeMax);
     print(d)
-    d = "yes"
+    #d = "yes"
     return jsonify(result = d)
 
 
@@ -300,6 +300,7 @@ def formSettings(setting,parentId,dictResponse):
     elif setting == "getPriorities":
         aClass = collectionClassDB.find_one({"_id":ObjectId(parentId)})
         aList = aClass.get('qPriority')
+        print aList
         flask.session['priorityList'] = aList
         d = "true"
     else:
@@ -344,10 +345,13 @@ def scoreByTime(aClass,priority):
                     locGraph[y][z]+=(1*priority)
     print locGraph
     return locGraph
+
+
 funcList = []
 funcList.append(funcTest)
 funcList.append(scoreByPref)
 funcList.append(scoreByTime)
+#funcList.append(preScoreByGrades)
 
 def createTeams(classId,groupSizeMax):
     #initialize graph
