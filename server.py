@@ -120,7 +120,7 @@ def preTeamCreate():
     groupSizeMax = request.args.get('groupSizeMax',0, type=int)
     d = createTeams(classId,groupSizeMax);
     print(d)
-    d = "yes"
+    #d = "yes"
     return jsonify(result = d)
 
 
@@ -208,6 +208,11 @@ def preSettings():
     className = aVal.get("className")
     classId = aVal.get("classId")
     priorityList = aVal.get("priorityList")
+    for x in range(0,len(priorityList)):
+        if priorityList[x] == None:
+            priorityList[x] = 0
+        else:
+            priorityList[x] = int(priorityList[x])
     print priorityList
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
@@ -346,10 +351,13 @@ def scoreByTime(aClass,priority):
                     locGraph[y][z]+=(1*priority)
     print locGraph
     return locGraph
+
+
 funcList = []
 funcList.append(funcTest)
 funcList.append(scoreByPref)
 funcList.append(scoreByTime)
+#funcList.append(preScoreByGrades)
 
 def createTeams(classId,groupSizeMax):
     #initialize graph
