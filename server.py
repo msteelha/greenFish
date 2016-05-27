@@ -252,11 +252,17 @@ def classDBSettings(setting,className,classId,priorityList):
         )
         d = "added"
     elif setting == "removeClass":
+        app.logger.debug("test1")
         collectionClassDB.remove({"_id":ObjectId(classId)})
+        app.logger.debug("test2")
         locList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
+        app.logger.debug("test3")
+        app.logger.debug("id: " + classId)
         ### add checker for if ID exists
         deleteForms(classId)
+        app.logger.debug("test4")
         locList.remove(classId)
+        app.logger.debug("test5")
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"classList":locList}}
@@ -433,13 +439,11 @@ def getGroupsScore(groups,scoreMatrix):
         outerSol = 0.0
         count = 0
         #print g
-
         for val in g:
             if val != None:
                 count+=1
         if count < 2:
             continue
-
         for x in range(0,len(g)):
             innerSol = 1.0
             for y in range(0,len(g)):
