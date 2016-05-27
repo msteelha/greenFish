@@ -44,9 +44,7 @@
 </div>
 
 <script type="text/javascript">
-
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
   $(document).ready(function(){
       $("#myBtn").click(function(){
           var adminName = document.getElementById("adminName").value;
@@ -62,11 +60,9 @@
                     else{
                         window.location = $SCRIPT_ROOT + "/admin"
                         }
-
                   }); // End of the call to getJSON
           });  // End of the function to be called when field changes
      });   // end of what we do on document ready
-
 </script>
 </body>
 </html>
