@@ -41,8 +41,8 @@
         {% for memo in session.myClassDB %}
       {% set testing =  memo | classObj%}
     <!--<div class="formContainer">-->
-      <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button>
-      <!--{{testing._id}} <!--need to update span-->-->
+      <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">Forms: {{testing.formList|length}}</span> {{testing.name}} </button>
+      <!--{{testing._id}} <!--need to update span-->
       <!--<input id="teamSize" placeholder="Max Team Size"></input>-->
       <!--<button id="btnAlgorithm2" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>-->
     <!--</div>-->
@@ -53,7 +53,7 @@
 
     {% else %}
 
-    <p>You do not have any forms published.
+    <p>You do not have any courses published.
 
     {% endif %}
 
@@ -85,20 +85,19 @@
 
       <div class="row">
 
-      <!--list of completed forms for viewing (will be clickable)-->
-        <div class="col-md-6">
+ <!--list of completed forms for viewing (will be clickable)-->
+        <div class="col-md-6" name="formNames">
           <h3><small>Completed Forms:</small></h3><br>
 
           <!--need to get the forms with correct class IDs-->
           {% if session.myFormsDB %}
 
-
           <div class="list-group" id="completed-forms">
 
             {% for memo in session.myFormsDB %}
-            {% set testing =  memo | formInfo %}
+            {% set form =  memo | formInfo %}
 
-            <button type="button" class="list-group-item">testing.name</button>
+            <button type="button" class="list-group-item">{{form.name}}</button>
 
             {% endfor %}
 
@@ -116,7 +115,7 @@
         <!--button to run matching algorithm, or list of assigned teams-->
         <div class="col-md-6">
           <h3><small>Teams:</small></h3><br>
-          <p>You have not allocated teams yet. Click below to run the team building algorithm.
+          <!--<p>You have not allocated teams yet. Click below to run the team building algorithm.-->
           <br><br>
           <div class="col-md-8">
           <input id="teamSize" type="text" class="form-control" placeholder="Min team size"></input>
@@ -125,6 +124,9 @@
           <button id="btnAlgorithm" type="button" class="btn btn-info">RUN</button>
           </div>
         </div>
+            <br>
+              <ul id="myList">
+              </ul>
       </div>
 
   </div>
@@ -154,6 +156,7 @@
 
       //update form ID in results view
       document.getElementById("form-id-header").innerHTML = classID;
+      $("#formNames").load(location.href + " #formNames");
 
     });
 
@@ -162,7 +165,7 @@
     $("#btnAlgorithm").click(function(){
         //var classID = $(this).attr('mongoID');
         var classID = selectedClassID;
-        var groupSizeMax= $(this).prev().val();
+        var groupSizeMax= document.getElementById("teamSize").value;
         alert("ID: " + classID);
         alert("team size: " + groupSizeMax);
 
@@ -172,6 +175,24 @@
               // The function to call with the response
               function(data) {
                 console.log(data);
+                var arrayLength = data["result"].length;
+                for (var i = 0; i < arrayLength; i++) {
+                    var outerNode = document.createElement("ul");
+                    var outerTextNode = "\nTeam: " + (i+1) + ": ";
+                    var aNode = document.createTextNode(outerTextNode);
+                    outerNode.appendChild(aNode);
+
+                    for(var j = 0; j< data["result"][i].length; j++){
+                        var innerNode = document.createElement("li");
+                        var textnode = document.createTextNode(data["result"][i][j]);
+                        outerNode.appendChild(textnode);
+                        if(j+1 != data["result"][i].length){
+                            var textnode = document.createTextNode(" , ");
+                            outerNode.appendChild(textnode);
+                        }
+                    }
+                    document.getElementById("myList").appendChild(outerNode);
+                }
               }); // End of the call to getJSON
     });
 
