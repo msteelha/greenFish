@@ -15,7 +15,7 @@
 <!--NAV BAR-->
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
-       <a class="navbar-brand" href="#">Team Builder</a>
+       <a class="navbar-brand" href="/index">Team Builder</a>
        <ul class="nav navbar-nav">
         <li class="active"><a href="/admin">My Forms</a></li>
         <li><a href="/adminCreate">Create Form</a></li>
@@ -41,7 +41,8 @@
         {% for memo in session.myClassDB %}
       {% set testing =  memo | classObj%}
     <!--<div class="formContainer">-->
-      <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button> <!--need to update span-->
+      <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button>
+      {{testing._id}} <!--need to update span-->
       <!--<input id="teamSize" placeholder="Max Team Size"></input>-->
       <!--<button id="btnAlgorithm2" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>-->
     <!--</div>-->

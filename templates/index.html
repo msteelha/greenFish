@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
-<title>teambuilder</title>
+<title>Team Builder</title>
 <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -10,17 +10,27 @@
 </head>
 
 <body>
-	<div class="container-fluid bg-1 text-center"><h1>Index Page</h1>
-<p>This is just a placeholder page</p>
-	</div>
-<div class="container-fluid bg-2">
-    <form action="/_portal" method="get">
-  <div class="col-md-6"><button name="portal" type="submit" value="client" class="btn btn-default btn-block">Client</button>
-  </div>
-  <div class="col-md-6">
-  <button name="portal" type="submit" value="admin" class="btn btn-primary btn-block">Admin</button>
-  </div>
+
+  <!--NAV BAR-->
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <a class="navbar-brand" href="/index">Team Builder</a>
+      <form class="navbar-form navbar-right" action="/_portal" method="get">
+      <button name="portal" type="submit" value="admin" class="btn btn-default">Log In</button>
   </form>
+    </div>
+  </nav>
+
+  <!---MAIN CONTENT-->
+  <div class="container">
+    <div class="jumbotron">
+    <h1>Welcome to <b>Team Builder</b></h1> 
+    <p>Team Builder is a web app that allows ideal teams to be formed for a CIS 422 class. To get started, either log in / sign up as an instructor, or as a student head straight to the form submission by clicking below.</p> <br>
+    <form action="/_portal" method="get" style="padding: 0 10 5 25;">
+   <button name="portal" type="submit" value="client" class="btn btn-info btn-lg" >Fill out a form</button></form>
+  </div>
+  </div>
+
   <script type="text/javascript">
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     function myFunction(val){
