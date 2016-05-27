@@ -17,11 +17,9 @@ Do the following in order:
 
 virtualenv env
 
-pip install -r requirements.txt
+source env/bin/activate
 
-python -m pip install pymongo
-
-will fix Makefile later
+make dist
 
 ###Proposal 
 
