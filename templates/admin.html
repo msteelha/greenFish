@@ -17,8 +17,8 @@
   <div class="container">
        <a class="navbar-brand" href="/index">Team Builder</a>
        <ul class="nav navbar-nav">
-        <li class="active"><a href="/admin">My Forms</a></li>
-        <li><a href="/adminCreate">Create Form</a></li>
+        <li class="active"><a href="/admin">My Courses</a></li>
+        <li><a href="/adminCreate">Create Course</a></li>
       </ul>
        <form class="navbar-form navbar-right" action="/_adminSettings" method="get">
           <button name="setting" type="submit" value="logout" class="btn btn-default">Logout</button>
@@ -29,24 +29,24 @@
 <div class="container">
   <div class="row">
 
-  {% set activeID = 'None' %}
+  {% set activeID = None %}
   <!--LEFT SIDE - LIST OF FORMS   -->
   <div class="col-md-4">
     <h1><small>My Forms</small></h1>
     <br>
 
-    {% if session.myClassDB != 'None' %}
+    {% if session.myClassDB != None %}
     <div class="list-group">
 
         {% for memo in session.myClassDB %}
       {% set testing =  memo | classObj%}
     <!--<div class="formContainer">-->
       <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">0/30</span> {{testing.name}} </button>
-      {{testing._id}} <!--need to update span-->
+      <!--{{testing._id}} <!--need to update span-->-->
       <!--<input id="teamSize" placeholder="Max Team Size"></input>-->
       <!--<button id="btnAlgorithm2" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>-->
     <!--</div>-->
-    
+
       {% endfor %}
 
     </div>
@@ -70,8 +70,8 @@
       <!-- form ID and delete button -->
       <div class="well well-sm">
 
-        <h4><small><b>Form ID: </b></small><small id="form-id-header">none selected</small>
-        <button id="btnDelete" type="button" class="btn btn-info">Delete Form</button></h4>
+        <h4><small><b>Course ID: </b></small><small id="form-id-header">none selected</small>
+        <button id="btnDelete" type="button" class="btn btn-info">Delete Course</button></h4>
       </div>
 
       <!-- progress bar to indicate completion-->
@@ -180,15 +180,15 @@
       //get class ID
       var classID = selectedClassID;
       alert("id: " + classID);
-      
-      //var preJson = {setting:'removeClass', className: 'na', classID:classID, priorityList:'[]'};
-      
+
+      var preJson = {setting:"removeClass", className: 'na', classID:classID, priorityList:[]};
+
       //send to backend
       $.getJSON($SCRIPT_ROOT + '/_classDBSettings',
-        {setting:'removeClass',className:'na', classId: classID, priorityList: '[]'},
+        {aThing: JSON.stringify(preJson)},
         function(data) {
-          var result = data.result;
-          alert(result);
+          alert(data);
+          location.reload();
         });
 
     });

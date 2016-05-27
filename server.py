@@ -224,14 +224,14 @@ def preSettings():
     aVal = json.loads(aReturn)
     setting = aVal.get("setting")
     className = aVal.get("className")
-    classId = aVal.get("classId")
+    classId = aVal.get("classID")
     priorityList = aVal.get("priorityList")
-    for x in range(0,len(priorityList)):
-        if priorityList[x] == None:
-            priorityList[x] = 0
-        else:
-            priorityList[x] = int(priorityList[x])
-    print priorityList
+    if setting != "removeClass":
+        for x in range(0,len(priorityList)):
+            if priorityList[x] == None:
+                priorityList[x] = 0
+            else:
+                priorityList[x] = int(priorityList[x])
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
 
@@ -252,21 +252,15 @@ def classDBSettings(setting,className,classId,priorityList):
         )
         d = "added"
     elif setting == "removeClass":
-        app.logger.debug("test1")
-        collectionClassDB.remove({"_id":ObjectId(classId)})
-        app.logger.debug("test2")
         locList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
-        app.logger.debug("test3")
-        app.logger.debug("id: " + classId)
         ### add checker for if ID exists
         deleteForms(classId)
-        app.logger.debug("test4")
         locList.remove(classId)
-        app.logger.debug("test5")
         collectionAccounts.update_one(
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"classList":locList}}
         )
+        collectionClassDB.remove({"_id":ObjectId(classId)})
         d = "removed"
     elif setting == "setPriorities":
         collectionClassDB.update_one(
@@ -279,6 +273,7 @@ def classDBSettings(setting,className,classId,priorityList):
     return d
 
 def deleteForms(classId):
+    print classId
     formList = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("formList")
     for fId in formList:
         collectionFormsDB.remove({"_id":ObjectId(fId)})
@@ -412,6 +407,7 @@ def getTeams(aClass,compGraph,groupSizeMax):
     hashOfForms = getHash(aClass)
     for x in range(0,100000):
         randomTeam = getRandomGroup(hashOfForms,groupSizeMax,2.0)
+        #randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
         theScore = getGroupsScore(randomTeam,compGraph)
         if theScore > currTeamScore:
             currTeamScore = theScore
@@ -439,11 +435,13 @@ def getGroupsScore(groups,scoreMatrix):
         outerSol = 0.0
         count = 0
         #print g
+
         for val in g:
             if val != None:
                 count+=1
         if count < 2:
             continue
+
         for x in range(0,len(g)):
             innerSol = 1.0
             for y in range(0,len(g)):
@@ -461,6 +459,7 @@ def getGroupsScore(groups,scoreMatrix):
     """""""""
 
 def getRandomGroup(hashOfForms,groupSizeMax,minGroup):
+#def getRandomGroup(hashOfForms,minGroup):
     tempList = []
     teams = []
     for x in range(0,len(hashOfForms)):
