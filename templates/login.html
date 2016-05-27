@@ -51,7 +51,7 @@
           var adminName = document.getElementById("adminName").value;
           var adminKey = document.getElementById("adminKey").value;
           $.getJSON($SCRIPT_ROOT + '/_submitLoginRequest',
-                  { adminName: adminName, adminKey: adminKey, setting: document.getElementById("myBtn").value},
+                  { adminName: adminName, adminKey: adminKey},
                   function(data) {
                      var result = data.result;
                      obj = JSON.parse(result);

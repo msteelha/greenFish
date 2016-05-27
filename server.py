@@ -150,17 +150,34 @@ def loginGate():
     return jsonify(result = d)
 
 ### for administrative settings###
+
+##
+#    requests:
+#       setting
+#           "addAdmin"
+#               get "adminName"
+#               return "added"||"account exists"
+#           "removeAdmin"
+#               get "AdminId"
+#               return redirect to login
+#          "logout"
+#               return redirect to login
+#
+
+
 @app.route("/_adminSettings")
 def adminSettings():
     setting = request.args.get('setting',0,type=str)
     adminName = request.args.get('adminName',0,type=str)
     adminKey = request.args.get('adminKey',0,type=str)
+    print adminName
     if setting  == "addAdmin":
         classList = [] #a list of team builder object ids for the administrator
         if collectionAccounts.find_one({'name':adminName}) == None:
             record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "classList": classList}
             collectionAccounts.insert(record)
             d = "added"
+            print d
         else:
             d = "account exists"
     elif setting == "removeAdmin":
@@ -175,6 +192,7 @@ def adminSettings():
         return flask.redirect(url_for('login'))
     else:
         d = "wat"
+    print d
     return jsonify(result = d)
 
 def removeState():
