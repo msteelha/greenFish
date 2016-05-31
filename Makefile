@@ -1,12 +1,3 @@
-#
-# Simple Makefile for first Flask project
-#
-
-##
-## Except for installation, all commands should be run with 
-## the virtual environment active
-##
-
 # Configuration 
 #
 PYVENV = /usr/bin/env pyvenv-3.4  # This is the version in ix.cs.uoregon.edu
@@ -24,5 +15,9 @@ install:
 	(.  env/bin/activate; pip install -r requirements.txt)
 
 dist:
-	pip freeze >requirements.txt
+	#virtualenv env
+	#source env/bin/activate
+	pip install -r requirements.txt
+	python -m pip install pymongo
+	#pip freeze >requirements.txt
 

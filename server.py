@@ -150,17 +150,34 @@ def loginGate():
     return jsonify(result = d)
 
 ### for administrative settings###
+
+##
+#    requests:
+#       setting
+#           "addAdmin"
+#               get "adminName"
+#               return "added"||"account exists"
+#           "removeAdmin"
+#               get "AdminId"
+#               return redirect to login
+#          "logout"
+#               return redirect to login
+#
+
+
 @app.route("/_adminSettings")
 def adminSettings():
     setting = request.args.get('setting',0,type=str)
     adminName = request.args.get('adminName',0,type=str)
     adminKey = request.args.get('adminKey',0,type=str)
+    print adminName
     if setting  == "addAdmin":
         classList = [] #a list of team builder object ids for the administrator
         if collectionAccounts.find_one({'name':adminName}) == None:
             record = {"name":adminName, "password":adminKey, "date":arrow.utcnow().naive, "classList": classList}
             collectionAccounts.insert(record)
             d = "added"
+            print d
         else:
             d = "account exists"
     elif setting == "removeAdmin":
@@ -175,6 +192,7 @@ def adminSettings():
         return flask.redirect(url_for('login'))
     else:
         d = "wat"
+    print d
     return jsonify(result = d)
 
 def removeState():
@@ -206,14 +224,14 @@ def preSettings():
     aVal = json.loads(aReturn)
     setting = aVal.get("setting")
     className = aVal.get("className")
-    classId = aVal.get("classId")
+    classId = aVal.get("classID")
     priorityList = aVal.get("priorityList")
-    for x in range(0,len(priorityList)):
-        if priorityList[x] == None:
-            priorityList[x] = 0
-        else:
-            priorityList[x] = int(priorityList[x])
-    print priorityList
+    if setting != "removeClass":
+        for x in range(0,len(priorityList)):
+            if priorityList[x] == None:
+                priorityList[x] = 0
+            else:
+                priorityList[x] = int(priorityList[x])
     d = classDBSettings(setting,className,classId,priorityList)
     return jsonify(result = d)
 
@@ -234,7 +252,6 @@ def classDBSettings(setting,className,classId,priorityList):
         )
         d = "added"
     elif setting == "removeClass":
-        collectionClassDB.remove({"_id":ObjectId(classId)})
         locList = collectionAccounts.find_one({"_id":ObjectId(flask.session.get('login'))}).get("classList")
         ### add checker for if ID exists
         deleteForms(classId)
@@ -243,6 +260,7 @@ def classDBSettings(setting,className,classId,priorityList):
             {"_id": ObjectId(flask.session.get('login'))},
             {"$set": {"classList":locList}}
         )
+        collectionClassDB.remove({"_id":ObjectId(classId)})
         d = "removed"
     elif setting == "setPriorities":
         collectionClassDB.update_one(
@@ -255,6 +273,7 @@ def classDBSettings(setting,className,classId,priorityList):
     return d
 
 def deleteForms(classId):
+    print classId
     formList = collectionClassDB.find_one({"_id":ObjectId(classId)}).get("formList")
     for fId in formList:
         collectionFormsDB.remove({"_id":ObjectId(fId)})
@@ -388,6 +407,7 @@ def getTeams(aClass,compGraph,groupSizeMax):
     hashOfForms = getHash(aClass)
     for x in range(0,100000):
         randomTeam = getRandomGroup(hashOfForms,groupSizeMax,2.0)
+        #randomTeam = getRandomGroup(hashOfForms,groupSizeMax)
         theScore = getGroupsScore(randomTeam,compGraph)
         if theScore > currTeamScore:
             currTeamScore = theScore
@@ -439,6 +459,7 @@ def getGroupsScore(groups,scoreMatrix):
     """""""""
 
 def getRandomGroup(hashOfForms,groupSizeMax,minGroup):
+#def getRandomGroup(hashOfForms,minGroup):
     tempList = []
     teams = []
     for x in range(0,len(hashOfForms)):

@@ -17,11 +17,11 @@ Do the following in order:
 
 virtualenv env
 
-pip install -r requirements.txt
+source env/bin/activate
 
-python -m pip install pymongo
+make dist
 
-will fix Makefile later
+make a copy of CONFIG.base.py to CONFIG.py and make specific to your configurations
 
 ###Proposal 
 

@@ -17,8 +17,8 @@
   <div class="container">
        <a class="navbar-brand" href="/index">Team Builder</a>
        <ul class="nav navbar-nav">
-        <li class="active"><a href="/admin">My Forms</a></li>
-        <li><a href="/adminCreate">Create Form</a></li>
+        <li class="active"><a href="/admin">My Courses</a></li>
+        <li><a href="/adminCreate">Create Course</a></li>
       </ul>
        <form class="navbar-form navbar-right" action="/_adminSettings" method="get">
           <button name="setting" type="submit" value="logout" class="btn btn-default">Logout</button>
@@ -29,29 +29,31 @@
 <div class="container">
   <div class="row">
 
+  {% set activeID = None %}
   <!--LEFT SIDE - LIST OF FORMS   -->
   <div class="col-md-4">
     <h1><small>My Forms</small></h1>
     <br>
 
-    {% if session.myClassDB != 'None' %}
+    {% if session.myClassDB != None %}
     <div class="list-group">
 
         {% for memo in session.myClassDB %}
       {% set testing =  memo | classObj%}
-    <div class="formContainer">
-      <button type="button" class="list-group-item"><span class="badge">0/30</span> {{testing}} </button> <!--need to update span-->
-      <input id="teamSize" placeholder="Max Team Size"></input>
-      <button id="btnAlgorithm" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>
-    </div>
-    {{testing._id}}
+    <!--<div class="formContainer">-->
+      <button type="button" id="form-list-button" mongodID="{{testing._id}}" class="list-group-item"><span class="badge">Forms: {{testing.formList|length}}</span> {{testing.name}} </button>
+      <!--{{testing._id}} <!--need to update span-->
+      <!--<input id="teamSize" placeholder="Max Team Size"></input>-->
+      <!--<button id="btnAlgorithm2" type="button" class="btn btn-info" mongoID="{{testing._id}}">RUN</button>-->
+    <!--</div>-->
+
       {% endfor %}
 
     </div>
 
     {% else %}
 
-    <p>You do not have any forms published.
+    <p>You do not have any courses published.
 
     {% endif %}
 
@@ -67,8 +69,9 @@
 
       <!-- form ID and delete button -->
       <div class="well well-sm">
-        <h4><small><b>Form ID:</b> 129564560</small>
-        <button id="btnDelete" type="button" class="btn btn-info">Delete Form</button></h4>
+
+        <h4><small><b>Course ID: </b></small><small id="form-id-header">none selected</small>
+        <button id="btnDelete" type="button" class="btn btn-info">Delete Course</button></h4>
       </div>
 
       <!-- progress bar to indicate completion-->
@@ -82,31 +85,48 @@
 
       <div class="row">
 
-      <!--list of completed forms for viewing (will be clickable)-->
-        <div class="col-md-6">
+ <!--list of completed forms for viewing (will be clickable)-->
+        <div class="col-md-6" name="formNames">
           <h3><small>Completed Forms:</small></h3><br>
+
+          <!--need to get the forms with correct class IDs-->
+          {% if session.myFormsDB %}
+
           <div class="list-group" id="completed-forms">
-            <button type="button" class="list-group-item">Name 1</button>
-            <button type="button" class="list-group-item">Name 2</button>
-            <button type="button" class="list-group-item">Name 3</button>
-            <button type="button" class="list-group-item">Name 4</button>
-            <button type="button" class="list-group-item">Name 5</button>
-            <button type="button" class="list-group-item">Name 1</button>
-            <button type="button" class="list-group-item">Name 2</button>
-            <button type="button" class="list-group-item">Name 3</button>
-            <button type="button" class="list-group-item">Name 4</button>
-            <button type="button" class="list-group-item">Name 5</button>
+
+            {% for memo in session.myFormsDB %}
+            {% set form =  memo | formInfo %}
+
+            <button type="button" class="list-group-item">{{form.name}}</button>
+
+            {% endfor %}
+
           </div>
+
+          {% else %}
+
+          <p>You do not have any completed forms returned yet.
+
+          {% endif %}
+
         </div>
 
 
         <!--button to run matching algorithm, or list of assigned teams-->
         <div class="col-md-6">
           <h3><small>Teams:</small></h3><br>
-          <p>You have not allocated teams yet. Click below to run the team building algorithm.
+          <!--<p>You have not allocated teams yet. Click below to run the team building algorithm.-->
           <br><br>
+          <div class="col-md-8">
+          <input id="teamSize" type="text" class="form-control" placeholder="Min team size"></input>
+          </div>
+          <div class="col-md-4">
           <button id="btnAlgorithm" type="button" class="btn btn-info">RUN</button>
+          </div>
         </div>
+            <br>
+              <ul id="myList">
+              </ul>
       </div>
 
   </div>
@@ -117,32 +137,80 @@
 
 <script type="text/javascript">
 
+  var selectedClassID = undefined;
+
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
   $(document).ready(function(){
 
-    //script to make list-group seem active
-    //and also load results page with form matching form id
+    $("#form-list-button").click(function(){
+
+      //get id of selected list group
+      var classID = $("#form-list-button").attr('mongodID');
+      selectedClassID = classID;
+      //alert(classID);
+
+      //make it appear active
+      $(".list-group list-group-item").removeClass("active");
+      $(this).addClass("active");
+
+      //update form ID in results view
+      document.getElementById("form-id-header").innerHTML = classID;
+      $("#formNames").load(location.href + " #formNames");
+
+    });
+
 
 
     $("#btnAlgorithm").click(function(){
-        var classID = $(this).attr('mongoID');
-        var groupSizeMax= $(this).prev().val();
-        alert(classID);
-        alert(groupSizeMax);
+        //var classID = $(this).attr('mongoID');
+        var classID = selectedClassID;
+        var groupSizeMax= document.getElementById("teamSize").value;
+        alert("ID: " + classID);
+        alert("team size: " + groupSizeMax);
 
          $.getJSON($SCRIPT_ROOT + '/_createTeams',
             // The object to pass to the server
             {classID: classID, groupSizeMax: groupSizeMax},
-                  // The function to call with the response
-                  function(data) {
-                        console.log(data);
-                  }); // End of the call to getJSON
+              // The function to call with the response
+              function(data) {
+                console.log(data);
+                var arrayLength = data["result"].length;
+                for (var i = 0; i < arrayLength; i++) {
+                    var outerNode = document.createElement("ul");
+                    var outerTextNode = "\nTeam: " + (i+1) + ": ";
+                    var aNode = document.createTextNode(outerTextNode);
+                    outerNode.appendChild(aNode);
+
+                    for(var j = 0; j< data["result"][i].length; j++){
+                        var innerNode = document.createElement("li");
+                        var textnode = document.createTextNode(data["result"][i][j]);
+                        outerNode.appendChild(textnode);
+                        if(j+1 != data["result"][i].length){
+                            var textnode = document.createTextNode(" , ");
+                            outerNode.appendChild(textnode);
+                        }
+                    }
+                    document.getElementById("myList").appendChild(outerNode);
+                }
+              }); // End of the call to getJSON
     });
 
     $("#btnDelete").click(function(){
 
-      //delete the form
+      //get class ID
+      var classID = selectedClassID;
+      alert("id: " + classID);
+
+      var preJson = {setting:"removeClass", className: 'na', classID:classID, priorityList:[]};
+
+      //send to backend
+      $.getJSON($SCRIPT_ROOT + '/_classDBSettings',
+        {aThing: JSON.stringify(preJson)},
+        function(data) {
+          alert(data);
+          location.reload();
+        });
 
     });
 
