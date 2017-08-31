@@ -22,11 +22,3 @@ source env/bin/activate
 make dist
 
 make a copy of CONFIG.base.py to CONFIG.py and make specific to your configurations
-
-###Proposal 
-
-Project Proposal avaiable here: https://docs.google.com/document/d/1xUiHJ3p5OtUf_5L7pVXDkMUZIh6uWWWdzzQtH2H34qM/edit?usp=sharing
-
-###Wiki
-Our wiki contains our devlogs, User Documentation, Technical documentation
-
